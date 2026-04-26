@@ -24,11 +24,6 @@ env/
 # Data files (large CSVs / parquet)
 data/
 
-# Trained model artifacts
-artifacts/
-
-# Runtime logs
-logs/
 
 # macOS
 .DS_Store
