@@ -190,3 +190,51 @@
 2026-04-26 09:38:59  INFO     [bot] Starting (restart #0)
 2026-04-26 09:38:59  INFO     [dashboard] Starting (restart #0)
 2026-04-26 09:38:59  INFO     [drift_monitor] Starting (restart #0)
+2026-04-26 12:56:32  INFO     Shutdown signal received
+2026-04-26 12:56:32  INFO     Stopping all processes ...
+2026-04-26 12:56:32  INFO     [collector] Sending SIGTERM ...
+2026-04-26 12:56:32  WARNING  [collector] Exited (code=0, uptime=11853s) — restarting in 10.0s
+2026-04-26 12:56:32  INFO     [collector] Supervisor stopped.
+2026-04-26 12:56:32  INFO     [collector] Stopped cleanly.
+2026-04-26 12:56:32  INFO     [bot] Sending SIGTERM ...
+2026-04-26 12:56:32  WARNING  [bot] Exited (code=-15, uptime=11853s) — restarting in 15.0s
+2026-04-26 12:56:32  INFO     [bot] Supervisor stopped.
+2026-04-26 12:56:32  INFO     [bot] Stopped cleanly.
+2026-04-26 12:56:32  INFO     [dashboard] Sending SIGTERM ...
+2026-04-26 12:56:32  WARNING  [dashboard] Exited (code=-15, uptime=11853s) — restarting in 10.0s
+2026-04-26 12:56:32  INFO     [dashboard] Supervisor stopped.
+2026-04-26 12:56:32  INFO     [dashboard] Stopped cleanly.
+2026-04-26 12:56:32  INFO     [drift_monitor] Sending SIGTERM ...
+2026-04-26 12:56:32  WARNING  [drift_monitor] Exited (code=-15, uptime=11853s) — restarting in 10.0s
+2026-04-26 12:56:32  INFO     [drift_monitor] Supervisor stopped.
+2026-04-26 12:56:32  INFO     [drift_monitor] Stopped cleanly.
+2026-04-26 12:56:32  INFO     Orchestrator stopped.
+2026-04-26 12:58:36  INFO     ============================================================
+2026-04-26 12:58:36  INFO     ML Trading System Orchestrator starting
+2026-04-26 12:58:36  INFO     Project root: /Users/ryanruehl/Desktop/ML Bot
+2026-04-26 12:58:36  INFO     Python:       /Users/ryanruehl/Desktop/ML Bot/venv/bin/python3
+2026-04-26 12:58:36  INFO     ============================================================
+2026-04-26 12:58:36  INFO     Retraining scheduler started — next run: 2026-05-03 00:00:00-05:00
+2026-04-26 12:58:36  INFO     [collector] Starting (restart #0)
+2026-04-26 12:58:36  INFO     [bot] Starting (restart #0)
+2026-04-26 12:58:36  INFO     [dashboard] Starting (restart #0)
+2026-04-26 12:58:36  INFO     [drift_monitor] Starting (restart #0)
+2026-04-26 14:43:54  INFO     Shutdown signal received
+2026-04-26 14:43:54  INFO     Stopping all processes ...
+2026-04-26 14:43:54  INFO     [collector] Sending SIGTERM ...
+2026-04-26 14:43:54  WARNING  [collector] Exited (code=0, uptime=6318s) — restarting in 10.0s
+2026-04-26 14:43:54  INFO     [collector] Supervisor stopped.
+2026-04-26 14:43:54  INFO     [collector] Stopped cleanly.
+2026-04-26 14:43:54  INFO     [bot] Sending SIGTERM ...
+2026-04-26 14:43:55  WARNING  [bot] Exited (code=-15, uptime=6318s) — restarting in 15.0s
+2026-04-26 14:43:55  INFO     [bot] Supervisor stopped.
+2026-04-26 14:43:55  INFO     [bot] Stopped cleanly.
+2026-04-26 14:43:55  INFO     [dashboard] Sending SIGTERM ...
+2026-04-26 14:43:55  WARNING  [dashboard] Exited (code=-15, uptime=6318s) — restarting in 10.0s
+2026-04-26 14:43:55  INFO     [dashboard] Supervisor stopped.
+2026-04-26 14:43:55  INFO     [dashboard] Stopped cleanly.
+2026-04-26 14:43:55  INFO     [drift_monitor] Sending SIGTERM ...
+2026-04-26 14:43:55  WARNING  [drift_monitor] Exited (code=-15, uptime=6318s) — restarting in 10.0s
+2026-04-26 14:43:55  INFO     [drift_monitor] Supervisor stopped.
+2026-04-26 14:43:55  INFO     [drift_monitor] Stopped cleanly.
+2026-04-26 14:43:55  INFO     Orchestrator stopped.

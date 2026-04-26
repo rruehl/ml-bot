@@ -350,6 +350,67 @@ def _calculate_live_atr_14(df: pd.DataFrame) -> float:
     return float(pd.Series(tr).ewm(span=14, adjust=False).mean().iloc[-1])
 
 
+def _normalize_ob_levels(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Converts raw order book absolute price levels into price-relative distances
+    and per-level volume imbalances, matching the equivalent block in
+    BTCMinuteProcessor.engineer_features() in ml/preprocess.py exactly.
+
+    For each snapshot ("open", "close") and each of 50 levels:
+      ask_distance_{i}_{snap} = (ask_price - mid) / mid        [fraction above mid]
+      bid_distance_{i}_{snap} = (mid - bid_price) / mid        [fraction below mid]
+      imbalance_{i}_{snap}    = (bid_size - ask_size) / total  [bounded -1..1]
+
+    Raw absolute price and size columns are dropped so the DataFrame passed to
+    engineer_features() contains only stationary, price-independent features.
+
+    NOTE: Must be kept in sync with preprocess.py if the normalization logic changes.
+    """
+    _OB_LEVELS = 50
+    cols_to_drop: list[str] = []
+
+    for snap in ("open", "close"):
+        bid_col = f"best_bid_{snap}"
+        ask_col = f"best_ask_{snap}"
+        if bid_col not in df.columns or ask_col not in df.columns:
+            continue
+
+        mid = (df[bid_col] + df[ask_col]) / 2.0
+        mid = mid.replace(0, np.nan)
+
+        for i in range(_OB_LEVELS):
+            ask_p = f"ask[{i}].price_{snap}"
+            bid_p = f"bid[{i}].price_{snap}"
+            ask_s = f"ask[{i}].size_{snap}"
+            bid_s = f"bid[{i}].size_{snap}"
+
+            if ask_p in df.columns:
+                df[f"ask_distance_{i}_{snap}"] = (df[ask_p] - mid) / mid
+                cols_to_drop.append(ask_p)
+
+            if bid_p in df.columns:
+                df[f"bid_distance_{i}_{snap}"] = (mid - df[bid_p]) / mid
+                cols_to_drop.append(bid_p)
+
+            ask_s_ok = ask_s in df.columns
+            bid_s_ok = bid_s in df.columns
+            if ask_s_ok and bid_s_ok:
+                total_vol = df[bid_s] + df[ask_s]
+                df[f"imbalance_{i}_{snap}"] = (
+                    (df[bid_s] - df[ask_s]) / total_vol.replace(0, 1)
+                )
+                cols_to_drop.extend([ask_s, bid_s])
+            else:
+                if ask_s_ok:
+                    cols_to_drop.append(ask_s)
+                if bid_s_ok:
+                    cols_to_drop.append(bid_s)
+
+    if cols_to_drop:
+        df = df.drop(columns=[c for c in cols_to_drop if c in df.columns])
+    return df
+
+
 # ═════════════════════════════════════════════════════════════════════════════
 # RISK ENGINE
 # ═════════════════════════════════════════════════════════════════════════════
@@ -1591,10 +1652,15 @@ class StrategyController:
                 )
                 raw_df["symbol"] = "BTC_USDT"
 
-                # Gate 3: ATR volatility gate
+                # Gate 3: ATR volatility gate (uses raw OHLC — must run before normalization)
                 current_atr = _calculate_live_atr_14(raw_df)
                 if current_atr < Config.ATR_MIN or current_atr > Config.ATR_MAX:
                     return False, f"atr_outside_range_{current_atr:.2f}"
+
+                # Normalize order book levels to price-relative distances / imbalances.
+                # Must match BTCMinuteProcessor.engineer_features() in ml/preprocess.py
+                # exactly so live features are identical to training features.
+                raw_df = _normalize_ob_levels(raw_df)
 
                 # Gate 4: Feature engineering via BTCMinuteProcessor
                 _dummy = Path("/dev/null")
@@ -1602,6 +1668,7 @@ class StrategyController:
                     macro_csv_path=_dummy,
                     micro_data_dir=_dummy,
                     output_dir=_dummy,
+                    save_debug_info=False,
                 )
                 processor = BTCMinuteProcessor(csv_path=csv_path, config=proc_config)
                 processor.data = raw_df  # bypass load_data() / clean_data()
@@ -1731,7 +1798,6 @@ class StrategyController:
                     if not self._stop_exit_in_progress:
                         self._stop_exit_in_progress = True
                         await self._stop_exit(kalshi, data)
-            return
 
 
         # ── Heartbeat ────────────────────────────────────────────────────────

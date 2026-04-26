@@ -13,3 +13,232 @@
 2026-04-26 09:54:01  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
 2026-04-26 09:59:01  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
 2026-04-26 10:04:01  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 10:09:01  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 10:14:01  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 10:15:30,371 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:15:35,949 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:15:41,363 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:15:46,904 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:15:53,054 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:15:59,697 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:16:09,108 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:16:15,243 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:16:20,808 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:16:27,237 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:16:33,005 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:16:38,704 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:16:44,153 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:16:49,454 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:16:54,573 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:16:59,818 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:19:01  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 10:24:01  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 10:29:01  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 10:30:33,644 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:30:39,594 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:30:44,872 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:30:50,107 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:30:56,149 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:31:02,906 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:31:08,428 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:31:13,939 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:31:19,513 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:31:26,002 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:31:31,820 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:31:37,264 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:31:43,637 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:31:49,181 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:31:55,071 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:32:00,712 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:34:01  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 10:39:01  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 10:44:01  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 10:45:38,129 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:45:44,744 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:45:50,588 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:45:56,173 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:46:03,233 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:46:08,763 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:46:14,258 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:46:19,627 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:46:24,971 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:46:30,979 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:46:36,521 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:46:42,776 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:46:48,920 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:46:55,237 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:47:01,465 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 10:49:01  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 10:54:01  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 10:59:01  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 11:00:53,828 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:00:59,122 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:01:04,447 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:01:09,673 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:01:14,959 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:01:20,177 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:01:25,542 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:01:30,815 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:01:36,032 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:01:41,295 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:01:46,495 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:01:51,796 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:01:56,948 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:02:02,539 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:04:01  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 11:09:01  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 11:14:01  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 11:15:54,117 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:15:59,332 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:16:04,920 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:16:10,439 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:16:15,960 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:16:21,205 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:16:26,401 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:16:31,714 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:16:37,213 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:16:42,350 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:16:47,438 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:16:52,520 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:16:57,721 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:17:02,944 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:19:01  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 11:24:01  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 11:29:02  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 11:30:25,405 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:30:31,035 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:30:36,434 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:30:41,961 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:30:47,796 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:30:53,395 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:30:59,108 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:31:04,744 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:31:10,228 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:31:15,652 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:31:21,443 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:31:27,241 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:31:33,128 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:31:39,072 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:31:45,075 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:31:50,895 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:31:56,779 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:32:02,896 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:34:02  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 11:39:02  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 11:44:02  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 11:45:29,152 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:45:34,752 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:45:39,960 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:45:45,510 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:45:51,018 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:45:56,227 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:46:01,882 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:46:07,474 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:46:12,892 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:46:18,414 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:46:23,894 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:46:29,421 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:46:35,051 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:46:40,836 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:46:46,620 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:46:52,161 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:46:57,849 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:47:03,138 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 11:49:02  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 11:54:02  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 11:59:02  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 12:00:36,247 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:00:42,326 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:00:48,350 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:00:54,464 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:01:00,134 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:01:05,681 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:01:11,723 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:01:17,204 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:01:22,533 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:01:28,075 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:01:33,511 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:01:39,046 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:01:44,954 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:01:50,852 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:01:56,417 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:02:02,051 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:04:02  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 12:09:02  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 12:14:02  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 12:15:54,137 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:15:59,733 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:16:05,666 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:16:11,326 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:16:16,936 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:16:22,409 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:16:27,892 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:16:33,371 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:16:38,918 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:16:44,672 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:16:50,217 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:16:55,684 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:17:01,078 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:19:02  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 12:24:02  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 12:29:02  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 12:30:52,985 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:30:58,885 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:31:04,860 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:31:10,316 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:31:16,036 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:31:21,562 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:31:27,113 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:31:32,588 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:31:38,102 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:31:43,584 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:31:49,117 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:31:54,599 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:32:00,062 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:34:02  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 12:39:02  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 12:44:02  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 12:45:15,717 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:45:21,954 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:45:27,805 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:45:33,558 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:45:39,140 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:45:44,627 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:45:50,205 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:45:55,700 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:46:01,532 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:46:07,070 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:46:12,626 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:46:18,091 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:46:23,603 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:46:29,111 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:46:35,091 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:46:40,699 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:46:46,497 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:46:51,968 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:46:57,571 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:47:03,049 ERROR [kalshi_bot_v8] ML inference error: [Errno 20] Not a directory: '/dev/null/debug'
+2026-04-26 12:49:02  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 12:54:02  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 12:58:38  INFO     [drift_monitor]  Drift monitor started  window=50  threshold=0.53  cooldown=12h  interval=300s
+2026-04-26 13:03:38  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 13:08:38  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 13:13:39  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 13:18:39  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 13:23:39  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 13:28:39  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 13:33:39  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 13:38:39  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 13:43:39  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 13:48:39  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 13:53:39  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 13:58:39  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 14:03:39  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 14:08:39  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 14:13:39  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 14:18:39  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 14:23:39  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 14:28:41  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 14:33:41  INFO     [drift_monitor]  Only 1 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 14:38:41  INFO     [drift_monitor]  Only 1 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 14:43:41  INFO     [drift_monitor]  Only 1 trade outcomes recorded — need 50 before drift evaluation begins

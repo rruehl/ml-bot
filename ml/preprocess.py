@@ -2398,6 +2398,50 @@ class BTCMinuteProcessor(BaseDataProcessor):
             total_close = (df['bid_depth_10_close'] + df['ask_depth_10_close']).replace(0, np.nan)
             df['depth_ratio_close'] = df['bid_depth_10_close'] / total_close
 
+        # ── Per-level relative order book features ─────────────────────
+        # Replaces absolute USD ask/bid prices with percentage distances
+        # from mid-price and per-level volume imbalances. This ensures
+        # stationarity as BTC price moves over time.
+        _OB_LEVELS = 50
+        _cols_to_drop = []
+        for _snap in ("open", "close"):
+            _bid_col = f"best_bid_{_snap}"
+            _ask_col = f"best_ask_{_snap}"
+            if _bid_col not in df.columns or _ask_col not in df.columns:
+                continue
+            _mid = (df[_bid_col] + df[_ask_col]) / 2.0
+            _mid = _mid.replace(0, np.nan)
+            for _i in range(_OB_LEVELS):
+                _ask_p = f"ask[{_i}].price_{_snap}"
+                _bid_p = f"bid[{_i}].price_{_snap}"
+                _ask_s = f"ask[{_i}].size_{_snap}"
+                _bid_s = f"bid[{_i}].size_{_snap}"
+
+                if _ask_p in df.columns:
+                    df[f"ask_distance_{_i}_{_snap}"] = (df[_ask_p] - _mid) / _mid
+                    _cols_to_drop.append(_ask_p)
+
+                if _bid_p in df.columns:
+                    df[f"bid_distance_{_i}_{_snap}"] = (_mid - df[_bid_p]) / _mid
+                    _cols_to_drop.append(_bid_p)
+
+                _ask_s_ok = _ask_s in df.columns
+                _bid_s_ok = _bid_s in df.columns
+                if _ask_s_ok and _bid_s_ok:
+                    _total_vol = df[_bid_s] + df[_ask_s]
+                    df[f"imbalance_{_i}_{_snap}"] = (
+                        (df[_bid_s] - df[_ask_s]) / _total_vol.replace(0, 1)
+                    )
+                    _cols_to_drop.extend([_ask_s, _bid_s])
+                else:
+                    if _ask_s_ok:
+                        _cols_to_drop.append(_ask_s)
+                    if _bid_s_ok:
+                        _cols_to_drop.append(_bid_s)
+
+        if _cols_to_drop:
+            df = df.drop(columns=[c for c in _cols_to_drop if c in df.columns])
+
         # ── Mid price (required by TargetEncoder in training pipeline) ───
         # Use order book mid when available, fall back to OHLC mid
         if {'best_bid_close', 'best_ask_close'}.issubset(df.columns):

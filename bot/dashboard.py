@@ -67,6 +67,9 @@ import pytz
 from flask import Flask, jsonify, render_template_string
 
 import sys
+from dotenv import load_dotenv
+load_dotenv(dotenv_path=Path(__file__).resolve().parent.parent / ".env")
+
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 try:
     from kalshi_client import KalshiClient
