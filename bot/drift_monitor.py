@@ -33,9 +33,10 @@ CHECK_INTERVAL_SEC = 300  # 5 minutes
 # environment used by orchestrator.py for all other subprocesses.
 RETRAIN_CMD = [
     sys.executable, "ml/train.py",
-    "--confidence_tau", "0.60",
-    "--atr_min",        "15.0",
-    "--atr_max",        "30.0",
+    "--optimize_threshold_for_profit",
+    "--optimize_tau_by", "ev",
+    "--atr_min",         "15.0",
+    "--atr_max",         "30.0",
 ]
 
 

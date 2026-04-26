@@ -96,7 +96,7 @@ class Config:
     SERIES_TICKER = "KXBTC15M"
 
     # ── ML signal parameters ──────────────────────────────────────────────────
-    ML_CONFIDENCE_TAU    = 0.820   # Execute if proba_up >= tau (YES) or proba_up <= 1-tau (NO)
+    ML_CONFIDENCE_TAU    = 0.50    # Fallback default; overwritten at runtime from decision_threshold.json
     ML_SPREAD_MAX_CENTS     = 4       # Max Kalshi spread (¢) at inference time
     # Inference fires ONCE per session, within this many minutes of session open.
     # The model predicts the full 15-min window outcome; running it at minute 5
@@ -836,6 +836,7 @@ class StrategyController:
                     f"\033[90m[{'HRTBT':^10}] "
                     f"{ctx.get('ticker','N/A')} | BTC:{ctx.get('btc',0):.2f} | "
                     f"ML:{dir_str}@{conf_str} | "
+                    f"Tau:{Config.ML_CONFIDENCE_TAU:.3f} | ATR:[{Config.ATR_MIN}-{Config.ATR_MAX}] | "
                     f"Y:{yes_bid}c N:{no_bid}c OBI:{ctx.get('obi',0):+.3f} | "
                     f"Trail:{self._stop_trail}¢ Best:{self._stop_best_bid}¢ Active:{self._stop_active} | "
                     f"Bank:${bank:.2f} ΔAge:{ob_last_delta_age:.0f}s"
@@ -1929,7 +1930,9 @@ class StrategyController:
             print(
                 f"\033[90m[{'HRTBT':^10}] "
                 f"{ticker} | BTC:{self.shared.latest_btc:.2f} | "
-                f"ML:--@0.000 | Y:--c N:--c OBI:+0.000 | "
+                f"ML:--@0.000 | "
+                f"Tau:{Config.ML_CONFIDENCE_TAU:.3f} | ATR:[{Config.ATR_MIN}-{Config.ATR_MAX}] | "
+                f"Y:--c N:--c OBI:+0.000 | "
                 f"Trail:0¢ Best:0¢ Active:False | "
                 f"Bank:${bank:.2f} ΔAge:--s{nows}\033[0m"
             )
@@ -2272,11 +2275,26 @@ async def model_watchdog(bot: StrategyController) -> None:
             ML.imputer  = new_imputer
             ML.features = new_features
 
+            # Load optimized confidence threshold written by train.py grid-search
+            threshold_path = ARTIFACTS_DIR / "decision_threshold.json"
+            new_tau = None
+            try:
+                if threshold_path.exists():
+                    with open(threshold_path) as _tf:
+                        _thresh = json.load(_tf)
+                    new_tau = float(_thresh["confidence_tau"])
+                    Config.ML_CONFIDENCE_TAU = new_tau
+            except Exception as _te:
+                logger.warning(f"[WATCHDOG] Could not load decision_threshold.json: {_te}")
+
             seen_mtime = flag_mtime
             FLAG_PATH.unlink(missing_ok=True)
 
-            msg = f"Hot-reloaded model (trained {flag_ts}) | {len(new_features)} features"
+            tau_str = f"{new_tau:.4f}" if new_tau is not None else "unchanged"
+            msg = (f"Hot-reloaded model (trained {flag_ts}) | {len(new_features)} features | "
+                   f"confidence_tau={tau_str}")
             logger.info(f"[WATCHDOG] {msg}")
+            print(f"[WATCHDOG] New confidence_tau loaded: {tau_str}")
             bot.log("MODEL_RELOAD", {}, msg)
 
         except Exception as exc:

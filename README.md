@@ -65,21 +65,24 @@ python3 ml/preprocess.py --input data/btc_1min.csv --output data/processed/
 Reads `data/processed/btc_1min_processed.parquet`, trains the model, writes `.joblib` artifacts to `artifacts/`.
 
 ```bash
-python3 ml/train.py --confidence_tau 0.60 --atr_min 15.0 --atr_max 30.0
+python3 ml/train.py --optimize_threshold_for_profit --optimize_tau_by ev --atr_min 15.0 --atr_max 30.0
 ```
+
+`--optimize_threshold_for_profit` triggers a grid-search over candidate confidence thresholds and selects the one that maximises expected value (EV) on the hold-out set. The result is written to `artifacts/decision_threshold.json` and hot-reloaded by the bot's `model_watchdog` without a restart.
 
 Key flags:
 
 | Flag | Default | Description |
 |---|---|---|
-| `--confidence_tau` | `0.70` | Minimum model confidence to count a signal |
-| `--atr_min` | `10.0` | Minimum ATR_14 for the volatility gate |
-| `--atr_max` | `35.0` | Maximum ATR_14 for the volatility gate |
+| `--optimize_threshold_for_profit` | off | Enable grid-search tau optimisation (replaces `--confidence_tau`) |
+| `--optimize_tau_by` | `ev` | Optimisation objective — `ev` (expected value) or `winrate` |
+| `--atr_min` | `15.0` | Minimum ATR_14 (USD) for the volatility gate |
+| `--atr_max` | `30.0` | Maximum ATR_14 (USD) for the volatility gate |
 | `--horizon_min` | `15` | Prediction horizon in minutes |
 | `--top_k_features` | `128` | Number of features selected for training |
 | `--epochs` | `30` | Training epochs |
 
-Training writes `two_class_model.joblib`, `scaler.joblib`, and `imputer.joblib` to `artifacts/`. The bot will not start without these three files.
+Training writes `two_class_model.joblib`, `scaler.joblib`, `imputer.joblib`, and `decision_threshold.json` to `artifacts/`. The bot will not start without the first three files.
 
 ### ATR channel sweep
 
@@ -92,7 +95,8 @@ for min in 5 10 15 20 25; do
             echo "========================================="
             echo "TESTING CHANNEL: MIN $min | MAX $max"
             echo "========================================="
-            python ml/train.py --confidence_tau 0.60 --atr_min $min --atr_max $max 2>&1 | awk '
+            python ml/train.py --optimize_threshold_for_profit --optimize_tau_by ev \
+                --atr_min $min --atr_max $max 2>&1 | awk '
                 /ATR volatility/ {print $0}
                 /TEST METRICS:/ {flag=1}
                 flag && /Coverage:/ {print $0}
@@ -108,7 +112,7 @@ Add `--epochs 5 --max_train_size 200000` for a faster sweep.
 ### Weekly retraining (every Sunday)
 
 ```bash
-python3 ml/preprocess.py && python3 ml/train.py --confidence_tau 0.60 --atr_min 15.0 --atr_max 30.0
+python3 ml/preprocess.py && python3 ml/train.py --optimize_threshold_for_profit --optimize_tau_by ev --atr_min 15.0 --atr_max 30.0
 ```
 
 ---
@@ -154,6 +158,7 @@ Opens a Flask UI for monitoring trades, P&L, and signal activity.
 | `artifacts/two_class_model.joblib` | Trained classifier |
 | `artifacts/scaler.joblib` | Feature scaler |
 | `artifacts/imputer.joblib` | Missing value imputer |
+| `artifacts/decision_threshold.json` | Grid-search optimised confidence tau (written by `train.py`, hot-reloaded by bot) |
 | `logs/production_log.csv` | Trade log (bot writes here) |
 | `logs/bot.log` | Bot system log |
 | `.env` | Kalshi API credentials (never commit) |

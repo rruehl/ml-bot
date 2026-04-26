@@ -199,6 +199,8 @@ HTML_TEMPLATE = """
         <div style="font-size:.65rem;color:var(--muted);margin-top:2px;">
             {{ mode }} &nbsp;·&nbsp; {{ 'Online' if is_active else 'Offline' }}
             &nbsp;·&nbsp; {{ trade_mode }}
+            &nbsp;·&nbsp; <span style="color:var(--blue);">Tau:{{ "{:.3f}".format(ml_tau) }}</span>
+            &nbsp;·&nbsp; <span style="color:var(--blue);">ATR:[{{ atr_min|int }}-{{ atr_max|int }}]</span>
             {% if not ws_connected %}<span style="color:var(--red);"> · WS DISCONNECTED</span>{% endif %}
             {% if ob_stale %}<span style="color:var(--yellow);"> · Stale OB ({{ ob_delta_age }}s)</span>{% endif %}
         </div>
@@ -762,12 +764,22 @@ def _model_info() -> dict:
                          hour=0, minute=0, second=0, microsecond=0)
         next_retrain = next_sun.strftime("%a %b %-d %H:%M CT")
 
+        # Prefer the grid-search optimized threshold over the training-time default
+        dt_path = _ARTIFACTS_DIR / "decision_threshold.json"
+        live_tau = metrics.get("confidence_tau", "--")
+        try:
+            if dt_path.exists():
+                with open(dt_path) as _f:
+                    live_tau = float(json.load(_f)["confidence_tau"])
+        except Exception:
+            pass
+
         return {
             "model_trained_at":  trained_str,
             "model_dir_acc":     round(metrics.get("direction_accuracy", 0) * 100, 1),
             "model_win_rate":    round(metrics.get("win_rate", 0) * 100, 1),
             "model_coverage":    round(metrics.get("coverage", 0) * 100, 2),
-            "model_tau":         metrics.get("confidence_tau", "--"),
+            "model_tau":         live_tau,
             "next_retrain":      next_retrain,
         }
     except Exception:
@@ -1001,8 +1013,18 @@ def get_data():
             .strftime("%H:%M:%S") if ml_birth_ts > 0 else "--"
         )
 
-        # Load tau from config for display
-        ml_tau = safe_float(cfg.get("ML_CONFIDENCE_TAU", 0.820))
+        # Load tau — prefer decision_threshold.json (grid-search result), fall back to config
+        _dt_path = _ARTIFACTS_DIR / "decision_threshold.json"
+        ml_tau = safe_float(cfg.get("ML_CONFIDENCE_TAU", 0.50))
+        try:
+            if _dt_path.exists():
+                with open(_dt_path) as _dtf:
+                    ml_tau = float(json.load(_dtf)["confidence_tau"])
+        except Exception:
+            pass
+
+        atr_min = safe_float(cfg.get("ATR_MIN", 15.0))
+        atr_max = safe_float(cfg.get("ATR_MAX", 30.0))
 
         birth_ts   = ml_birth_ts  # keep for any legacy references
         signal_age = ml_signal_age
@@ -1137,6 +1159,8 @@ def get_data():
             ml_signal_age=ml_signal_age,
             ml_fired_at=ml_fired_at,
             ml_tau=ml_tau,
+            atr_min=atr_min,
+            atr_max=atr_max,
             moneyness_bps=round(moneyness_bps, 1),
             signal_age=signal_age,
             ticker=str(lm.get("ticker", "--")),

@@ -41,12 +41,13 @@ PREPROCESS_CMD = [str(VENV_PYTHON), "ml/preprocess.py",
                   "--input",  "data/btc_1min.csv",
                   "--output", "data/processed/"]
 TRAIN_CMD      = [str(VENV_PYTHON), "ml/train.py",
-                  "--confidence_tau", "0.60",
-                  "--atr_min",        "15.0",
-                  "--atr_max",        "30.0",
-                  "--horizon_min",    "15",
-                  "--top_k_features", "128",
-                  "--epochs",         "30"]
+                  "--optimize_threshold_for_profit",
+                  "--optimize_tau_by",  "ev",
+                  "--atr_min",          "15.0",
+                  "--atr_max",          "30.0",
+                  "--horizon_min",      "15",
+                  "--top_k_features",   "128",
+                  "--epochs",           "30"]
 
 
 def _setup_logger() -> logging.Logger:
