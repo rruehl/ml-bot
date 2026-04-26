@@ -61,6 +61,7 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pytz
 from flask import Flask, jsonify, render_template_string
@@ -228,6 +229,9 @@ HTML_TEMPLATE = """
             Fees paid: <span class="red">${{ "{:.2f}".format(total_fees) }}</span>
             &nbsp;·&nbsp; 24h loss: <span class="red">${{ "{:.2f}".format(rolling_loss_24h) }}</span>
         </div>
+        <div class="sub">
+            Active Kelly Risk: <span class="blue">{{ "{:.2f}".format(active_risk_pct) }}%</span> per trade
+        </div>
     </div>
     <div class="card">
         <div class="card-title">Realized P&amp;L
@@ -271,7 +275,8 @@ HTML_TEMPLATE = """
             <span style="color:var(--text);font-size:.8rem;">{{ ticker }}</span><br>
             BTC: <span class="yellow">${{ "{:,.2f}".format(btc_price) }}</span><br>
             Expires: <span class="{{ 'red' if time_left < 3 else 'yellow' if time_left < 7 else '' }}">{{ "{:.1f}".format(time_left) }}m</span>
-            &nbsp;·&nbsp; Strike: ${{ "{:,.0f}".format(strike) }}
+            &nbsp;·&nbsp; Strike: ${{ "{:,.0f}".format(strike) }}<br>
+            Live ATR: <span class="{{ 'green' if atr_min <= live_atr <= atr_max else 'red' }}">${{ "{:.2f}".format(live_atr) }}</span>
         </div>
     </div>
 </div>
@@ -302,6 +307,50 @@ HTML_TEMPLATE = """
     {% endif %}
 </div>
 {% endif %}
+
+<!-- Session Inference History -->
+<div class="card">
+    <div class="card-title">Session Inference History</div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width:20%;">Time</th>
+                <th style="width:20%;">Prediction</th>
+                <th style="width:25%;">Confidence</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in inference_history %}
+            <tr>
+                <td style="color:var(--muted);">{{ row.time }}</td>
+                <td>
+                    <span class="{{ 'green' if row.direction == 'UP' else 'red' if row.direction == 'DN' else '' }}">
+                        {{ row.direction }}
+                    </span>
+                </td>
+                <td>
+                    <span class="{{ 'green' if row.confidence >= ml_tau * 100 else 'red' }}">
+                        {{ "{:.1f}".format(row.confidence) }}%
+                    </span>
+                </td>
+                <td>
+                    {% if row.status == 'success' %}
+                    <span class="green">✓ success</span>
+                    {% elif row.status == 'tau_gate_fail' %}
+                    <span class="red">tau_gate_fail</span>
+                    {% else %}
+                    <span class="orange">{{ row.status }}</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            {% if not inference_history %}
+            <tr><td colspan="4" style="text-align:center;padding:12px;color:var(--muted);">No ML inferences yet</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
 
 <!-- ML Signal Card -->
 <div class="card" style="border-color:{{ '#00e676' if ml_direction == 1 else '#ff5252' if ml_direction == 0 else '#333' }};">
@@ -349,6 +398,7 @@ HTML_TEMPLATE = """
         <div class="big-val">{{ "{:.1f}".format(win_rate) }}%</div>
         <div class="sub">{{ wins }}W / {{ losses }}L / {{ total_trades }} settled</div>
         <div class="hbar"><div class="hbar-fill" style="width:{{ win_rate }}%;background:{{ 'var(--green)' if win_rate >= 67 else 'var(--yellow)' if win_rate >= 50 else 'var(--red)' }};"></div></div>
+        <div class="sub">Drift Monitor (Last 50): <span class="{{ 'green' if drift_win_rate >= 55 else 'orange' if drift_win_rate >= 53 else 'red' }}">{{ "{:.1f}".format(drift_win_rate) }}%</span></div>
     </div>
     <div class="card">
         <div class="card-title">Trade Quality</div>
@@ -708,6 +758,23 @@ _BTC_CSV        = _PROJECT_ROOT / "data" / "btc_1min.csv"
 _ARTIFACTS_DIR  = _PROJECT_ROOT / "artifacts"
 
 
+def _calculate_live_atr_14(df: pd.DataFrame) -> float:
+    """
+    Computes a 14-period EWM ATR from OHLC data, matching _compute_atr in train.py exactly.
+    Operates on a single-asset DataFrame (no symbol grouping loop needed).
+    """
+    high       = df["high"].values.astype(np.float64)
+    low        = df["low"].values.astype(np.float64)
+    close      = df["close"].values.astype(np.float64)
+    prev_close = np.concatenate([[np.nan], close[:-1]])
+    tr = np.maximum.reduce([
+        high - low,
+        np.abs(high - prev_close),
+        np.abs(low - prev_close),
+    ])
+    return float(pd.Series(tr).ewm(span=14, adjust=False).mean().iloc[-1])
+
+
 def _collector_status() -> dict:
     """Return live collector health from the last row of btc_1min.csv."""
     import subprocess as _sp
@@ -814,6 +881,19 @@ def get_data():
 
         starting_deposit = safe_float(cfg.get("STARTING_DEPOSIT", 1000.0))
 
+        # ── Live ATR ───────────────────────────────────────────────────────────────
+        try:
+            _btc_df = pd.read_csv(_BTC_CSV).tail(100)
+            live_atr = _calculate_live_atr_14(_btc_df)
+        except Exception:
+            live_atr = 0.0
+
+        # ── Active Kelly risk ──────────────────────────────────────────────────────
+        KELLY_WIN_RATE  = safe_float(cfg.get("KELLY_WIN_RATE", 0.55))
+        KELLY_FRACTION  = safe_float(cfg.get("KELLY_FRACTION", 0.25))
+        kelly_full      = (KELLY_WIN_RATE - (1.0 - KELLY_WIN_RATE)) / 1.0
+        active_risk_pct = max(0.0, kelly_full) * KELLY_FRACTION * 100
+
         # ── Live balance: API first, then CSV fallback ─────────────────────────────
         live_balance, balance_from_api = fetch_live_balance()
         if not balance_from_api:
@@ -835,6 +915,13 @@ def get_data():
         settled = df[df["event"].isin(["PAYOUT", "SETTLE", "STOP_CONFIRMED", "STOP_FAILED_EXPIRY"])].copy()
         settled = pd.concat([settled, paper_stop_exits], ignore_index=True)
         settled = settled.sort_values("timestamp").reset_index(drop=True)
+
+        # ── Concept drift: rolling 50-trade win rate ───────────────────────────────
+        recent_50 = settled.tail(50)
+        if len(recent_50) > 0:
+            drift_win_rate = len(recent_50[recent_50["event"] == "PAYOUT"]) / len(recent_50) * 100
+        else:
+            drift_win_rate = 0.0
 
         if "pnl_this_trade" in settled.columns and not settled.empty:
             settled["pnl_float"] = settled["pnl_this_trade"].apply(safe_float)
@@ -1134,6 +1221,36 @@ def get_data():
                 "msg":   msg,
             })
 
+        # ── Latest ML inferences ───────────────────────────────────────────────
+        infer_rows   = df[df["event"] == "ML_INFERENCE"].tail(5)
+        fill_events  = df[df["event"].isin(["FILL_CONFIRMED", "PAPER_BUY"])]
+        inference_history = []
+        for _, ir in infer_rows.iloc[::-1].iterrows():
+            iconf    = safe_float(ir.get("ml_confidence", 0.0))
+            idir_raw = ir.get("ml_direction", None)
+            try:
+                idir = int(idir_raw) if idir_raw not in (None, "", "None") else None
+            except (ValueError, TypeError):
+                idir = None
+            dir_str = "UP" if idir == 1 else "DN" if idir == 0 else "--"
+
+            if iconf < ml_tau:
+                status = "tau_gate_fail"
+            else:
+                window_end      = ir["timestamp"] + pd.Timedelta(minutes=6)
+                following_fills = fill_events[
+                    (fill_events["timestamp"] > ir["timestamp"]) &
+                    (fill_events["timestamp"] <= window_end)
+                ]
+                status = "success" if not following_fills.empty else "filtered"
+
+            inference_history.append({
+                "time":       ir["timestamp"].astimezone(central).strftime("%H:%M:%S"),
+                "direction":  dir_str,
+                "confidence": round(iconf * 100, 1),
+                "status":     status,
+            })
+
         config_sections = build_config_sections(cfg)
         last_ct         = last["timestamp"].astimezone(central)
 
@@ -1158,6 +1275,9 @@ def get_data():
             ml_tau=ml_tau,
             atr_min=atr_min,
             atr_max=atr_max,
+            live_atr=round(live_atr, 2),
+            drift_win_rate=round(drift_win_rate, 1),
+            active_risk_pct=round(active_risk_pct, 2),
             moneyness_bps=round(moneyness_bps, 1),
             signal_age=signal_age,
             ticker=str(lm.get("ticker", "--")),
@@ -1188,6 +1308,7 @@ def get_data():
             order_coid=order_coid or "—",
             chart_labels=chart_labels, chart_data=chart_data, chart_timestamps=chart_timestamps,
             logs=logs, config_sections=config_sections,
+            inference_history=inference_history,
             **_collector_status(),
             **_model_info(),
         )
