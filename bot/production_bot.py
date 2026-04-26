@@ -163,7 +163,6 @@ class Config:
     KALSHI_WS_URL     = "wss://api.elections.kalshi.com/trade-api/ws/v2"
     LOG_ROTATE_MAX_MB = 50.0
 
-    TRADE_MODE = "first_signal"   # kept for session-roll guard logic
 
 
 _CONFIG_IMMUTABLE = frozenset({
@@ -1558,20 +1557,20 @@ class StrategyController:
         session signal regardless of whether should_trade is True — heartbeat
         and log always show them.
         """
-        # Gate 1: Inference must happen within the opening window of the session.
-        # minutes_left counts DOWN from 15 at open, so open = ~15.0.
-        # We only allow inference when minutes_left > (15 - ML_INFERENCE_WINDOW_MIN).
         minutes_left = data["minutes_left"]
         session_open_threshold = Config.TIME_ENTRY_MIN_MIN - Config.ML_INFERENCE_WINDOW_MIN
-        if minutes_left < session_open_threshold:
-            # Session is already underway — use the cached signal if we have one
-            if self.shared.ml_direction is None:
-                return False, f"inference_window_expired_{minutes_left:.1f}m_left"
-            # Signal already cached from session open — fall through to gate 6
+
+        if self.shared.ml_session_fired:
+            # Inference already ran this session — reuse the cached prediction.
+            # Skip the CSV read/feature engineering entirely to avoid per-tick CPU spikes.
             direction  = self.shared.ml_direction
             confidence = self.shared.ml_confidence
             proba_up   = self.shared.ml_proba_up
         else:
+            # Gate 1: Inference must happen within the opening window of the session.
+            if minutes_left < session_open_threshold:
+                return False, f"inference_window_expired_{minutes_left:.1f}m_left"
+
             # Gate 2: Kalshi spread liquidity check
             kalshi_spread = data["ask_yes"] - data["raw_yes_bid"]
             if kalshi_spread > Config.ML_SPREAD_MAX_CENTS:
@@ -1628,9 +1627,9 @@ class StrategyController:
                 setup_logging().error(f"ML inference error: {e}")
                 return False, f"inference_exception_{e}"
 
-            # Gate 5: Confidence threshold
-            if confidence < Config.ML_CONFIDENCE_TAU:
-                return False, f"confidence_below_tau_{confidence:.4f}"
+        # Gate 5: Confidence threshold (checked every tick against the live cached signal)
+        if confidence < Config.ML_CONFIDENCE_TAU:
+            return False, f"confidence_below_tau_{confidence:.4f}"
 
         # Gate 6 (always checked, even for cached signals): Moneyness gate.
         # The model predicts BTC price direction, but the Kalshi strike anchors
@@ -2287,14 +2286,27 @@ async def model_watchdog(bot: StrategyController) -> None:
             except Exception as _te:
                 logger.warning(f"[WATCHDOG] Could not load decision_threshold.json: {_te}")
 
+            # Load win rate from metrics and update Kelly sizing dynamically
+            metrics_path = ARTIFACTS_DIR / "metrics_two_class.json"
+            new_win_rate = None
+            try:
+                if metrics_path.exists():
+                    with open(metrics_path) as _mf:
+                        _metrics = json.load(_mf)
+                    new_win_rate = float(_metrics["win_rate"])
+                    Config.KELLY_WIN_RATE = new_win_rate
+            except Exception as _me:
+                logger.warning(f"[WATCHDOG] Could not load metrics_two_class.json: {_me}")
+
             seen_mtime = flag_mtime
             FLAG_PATH.unlink(missing_ok=True)
 
             tau_str = f"{new_tau:.4f}" if new_tau is not None else "unchanged"
+            wr_str  = f"{new_win_rate:.4f}" if new_win_rate is not None else "unchanged"
             msg = (f"Hot-reloaded model (trained {flag_ts}) | {len(new_features)} features | "
-                   f"confidence_tau={tau_str}")
+                   f"confidence_tau={tau_str} | kelly_win_rate={wr_str}")
             logger.info(f"[WATCHDOG] {msg}")
-            print(f"[WATCHDOG] New confidence_tau loaded: {tau_str}")
+            print(f"[WATCHDOG] New confidence_tau={tau_str} | kelly_win_rate={wr_str}")
             bot.log("MODEL_RELOAD", {}, msg)
 
         except Exception as exc:

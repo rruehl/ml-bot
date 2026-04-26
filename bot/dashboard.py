@@ -198,7 +198,6 @@ HTML_TEMPLATE = """
         </div>
         <div style="font-size:.65rem;color:var(--muted);margin-top:2px;">
             {{ mode }} &nbsp;·&nbsp; {{ 'Online' if is_active else 'Offline' }}
-            &nbsp;·&nbsp; {{ trade_mode }}
             &nbsp;·&nbsp; <span style="color:var(--blue);">Tau:{{ "{:.3f}".format(ml_tau) }}</span>
             &nbsp;·&nbsp; <span style="color:var(--blue);">ATR:[{{ atr_min|int }}-{{ atr_max|int }}]</span>
             {% if not ws_connected %}<span style="color:var(--red);"> · WS DISCONNECTED</span>{% endif %}
@@ -264,7 +263,7 @@ HTML_TEMPLATE = """
             </span>
         </div>
         <div class="sub">Conf: {{ "{:.1f}".format(ml_confidence * 100) }}% &nbsp;·&nbsp; τ={{ "{:.3f}".format(ml_tau) }}</div>
-        <div class="sub">Age: {{ signal_age }}m &nbsp;·&nbsp; Fired: {{ ml_fired_at }} &nbsp;·&nbsp; Mode: {{ trade_mode }}</div>
+        <div class="sub">Age: {{ signal_age }}m &nbsp;·&nbsp; Fired: {{ ml_fired_at }}</div>
     </div>
     <div class="card">
         <div class="card-title">Market</div>
@@ -680,7 +679,7 @@ def build_config_sections(cfg: dict) -> dict:
     # Note: TIME_ENTRY_MIN_MIN is the upper bound on minutes_left (entry window opens when < this)
     #       TIME_ENTRY_MAX_MIN is the lower bound on minutes_left (entry window closes when < this)
     sections = {
-        "Trading": ["PAPER_MODE", "TRADE_MODE", "MAX_FILLS_PER_SESSION", "MAX_CONTRACTS_LIMIT",
+        "Trading": ["PAPER_MODE", "MAX_FILLS_PER_SESSION", "MAX_CONTRACTS_LIMIT",
                     "MAKER_MAX_ENTRY_PRICE", "ENTRY_TTL_SECONDS",
                     "TIME_ENTRY_MIN_MIN", "TIME_ENTRY_MAX_MIN", "STARTING_DEPOSIT"],
         "ML Signal": ["ML_CONFIDENCE_TAU", "ML_INFERENCE_WINDOW_MIN",
@@ -692,7 +691,6 @@ def build_config_sections(cfg: dict) -> dict:
                     "STOP_EXIT_MAX_RETRIES", "STOP_EXIT_RETRY_INCREMENT"],
         "Execution": ["REPRICE_THRESHOLD", "AMEND_COOLDOWN_SEC", "TAKER_FORCE_MIN_LEFT",
                       "LADDER_THRESHOLD", "LADDER_FILL_FRACTION"],
-        "Filters": ["ENABLE_OBI_FILTER", "OBI_MIN_THRESHOLD"],
         "System":  ["MAX_DAILY_LOSS", "MAX_ORDERBOOK_STALE_SEC", "HEARTBEAT_INTERVAL_SEC",
                     "SETTLEMENT_INITIAL_DELAY", "SETTLEMENT_MAX_RETRIES",
                     "STOP_CONFIRM_DELAY_SEC"],
@@ -1136,14 +1134,13 @@ def get_data():
                 "msg":   msg,
             })
 
-        trade_mode      = str(cfg.get("TRADE_MODE", "first_signal")).replace("_", "-")
         config_sections = build_config_sections(cfg)
         last_ct         = last["timestamp"].astimezone(central)
 
         return dict(
             last_update=last_ct.strftime("%H:%M:%S"),
             is_active=is_active, ob_stale=ob_stale, ob_delta_age=round(ob_delta_age),
-            ws_connected=ws_connected, mode=mode_str, trade_mode=trade_mode,
+            ws_connected=ws_connected, mode=mode_str,
             live_balance=live_balance, balance_from_api=balance_from_api,
             starting_deposit=starting_deposit, roi=round(roi, 2),
             realized_pnl=realized_pnl,
