@@ -1,0 +1,15 @@
+apscheduler
+ccxt[pro]
+cryptography
+flask
+httpx
+joblib
+matplotlib
+numpy
+pandas
+python-dotenv
+pytz
+scikit-learn
+websockets
+PyYAML
+pyarrow
