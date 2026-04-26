@@ -1,11 +1,11 @@
-atr_max: 40.0
-atr_min: 5.0
+atr_max: 30.0
+atr_min: 15.0
 batch_size: 1024
 calibrate_probabilities: false
 confidence_grid_end: 0.95
 confidence_grid_start: 0.5
 confidence_grid_step: 0.01
-confidence_tau: 0.6
+confidence_tau: 0.7
 deadband_bps: 3.0
 dropout_rate: 0.2
 epochs: 30
@@ -20,14 +20,14 @@ mlp_hidden_sizes:
 - 128
 - 64
 model_type: mlp
-optimize_threshold_for_profit: false
+optimize_threshold_for_profit: true
 output_dir: /Users/ryanruehl/Desktop/ML Bot/artifacts
 profit_cost_bps: 1.0
 seed: 42
 sequence_len: 60
 task: classification
 top_k_features: 128
-training_timestamp: '2026-04-25T19:23:09.904395+00:00'
+training_timestamp: '2026-04-26T14:15:38.303054+00:00'
 two_class_mode: true
 two_stage_trade_threshold: 0.5
 unified_data_path: /Users/ryanruehl/Desktop/ML Bot/data/processed/btc_1min_processed.parquet

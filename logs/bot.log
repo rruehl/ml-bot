@@ -1,0 +1,15 @@
+2026-04-26 09:11:56  INFO     [drift_monitor]  Drift monitor started  window=50  threshold=0.53  cooldown=12h  interval=300s
+2026-04-26 09:16:58  INFO     [drift_monitor]  Drift monitor started  window=50  threshold=0.53  cooldown=12h  interval=300s
+2026-04-26 09:21:58  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 09:22:02,930 INFO [kalshi_bot_v8] [WATCHDOG] Hot-reloaded model (trained 2026-04-26T14:15:40.364874+00:00) | 128 features | confidence_tau=0.6200 | kelly_win_rate=0.5398
+2026-04-26 09:25:45  INFO     [drift_monitor]  Drift monitor started  window=50  threshold=0.53  cooldown=12h  interval=300s
+2026-04-26 09:27:32  INFO     [drift_monitor]  Drift monitor started  window=50  threshold=0.53  cooldown=12h  interval=300s
+2026-04-26 09:32:17  INFO     [drift_monitor]  Drift monitor started  window=50  threshold=0.53  cooldown=12h  interval=300s
+2026-04-26 09:33:48  INFO     [drift_monitor]  Drift monitor started  window=50  threshold=0.53  cooldown=12h  interval=300s
+2026-04-26 09:35:56  INFO     [drift_monitor]  Drift monitor started  window=50  threshold=0.53  cooldown=12h  interval=300s
+2026-04-26 09:39:01  INFO     [drift_monitor]  Drift monitor started  window=50  threshold=0.53  cooldown=12h  interval=300s
+2026-04-26 09:44:01  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 09:49:01  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 09:54:01  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 09:59:01  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 10:04:01  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins

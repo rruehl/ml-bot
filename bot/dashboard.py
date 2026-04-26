@@ -80,7 +80,7 @@ except Exception as _e:
 
 app = Flask(__name__)
 
-CSV_FILE = "production_log_v8.csv"
+CSV_FILE = str(Path(__file__).resolve().parent.parent / "logs" / "production_log.csv")
 
 EVENT_COLORS = {
     "PAPER_BUY":         "#00e676",
