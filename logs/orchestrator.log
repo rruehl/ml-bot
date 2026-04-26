@@ -238,3 +238,33 @@
 2026-04-26 14:43:55  INFO     [drift_monitor] Supervisor stopped.
 2026-04-26 14:43:55  INFO     [drift_monitor] Stopped cleanly.
 2026-04-26 14:43:55  INFO     Orchestrator stopped.
+2026-04-26 14:53:54  INFO     ============================================================
+2026-04-26 14:53:54  INFO     ML Trading System Orchestrator starting
+2026-04-26 14:53:54  INFO     Project root: /Users/ryanruehl/Desktop/ML Bot
+2026-04-26 14:53:54  INFO     Python:       /Users/ryanruehl/Desktop/ML Bot/venv/bin/python3
+2026-04-26 14:53:54  INFO     ============================================================
+2026-04-26 14:53:54  INFO     Retraining scheduler started — next run: 2026-05-03 00:00:00-05:00
+2026-04-26 14:53:54  INFO     [collector] Starting (restart #0)
+2026-04-26 14:53:54  INFO     [bot] Starting (restart #0)
+2026-04-26 14:53:54  INFO     [dashboard] Starting (restart #0)
+2026-04-26 14:53:54  INFO     [drift_monitor] Starting (restart #0)
+2026-04-26 15:01:38  INFO     Shutdown signal received
+2026-04-26 15:01:38  INFO     Stopping all processes ...
+2026-04-26 15:01:38  INFO     [collector] Sending SIGTERM ...
+2026-04-26 15:01:38  WARNING  [drift_monitor] Exited (code=-2, uptime=464s) — restarting in 10.0s
+2026-04-26 15:01:38  WARNING  [dashboard] Exited (code=0, uptime=464s) — restarting in 10.0s
+2026-04-26 15:01:39  WARNING  [bot] Exited (code=-2, uptime=464s) — restarting in 15.0s
+2026-04-26 15:01:40  WARNING  [collector] Exited (code=0, uptime=466s) — restarting in 10.0s
+2026-04-26 15:01:40  INFO     [collector] Supervisor stopped.
+2026-04-26 15:01:40  INFO     [collector] Stopped cleanly.
+2026-04-26 15:01:40  INFO     Orchestrator stopped.
+2026-04-26 15:09:08  INFO     ============================================================
+2026-04-26 15:09:08  INFO     ML Trading System Orchestrator starting
+2026-04-26 15:09:08  INFO     Project root: /Users/ryanruehl/Desktop/ML Bot
+2026-04-26 15:09:08  INFO     Python:       /Users/ryanruehl/Desktop/ML Bot/venv/bin/python3
+2026-04-26 15:09:08  INFO     ============================================================
+2026-04-26 15:09:08  INFO     Retraining scheduler started — next run: 2026-05-03 00:00:00-05:00
+2026-04-26 15:09:08  INFO     [collector] Starting (restart #0)
+2026-04-26 15:09:08  INFO     [bot] Starting (restart #0)
+2026-04-26 15:09:08  INFO     [dashboard] Starting (restart #0)
+2026-04-26 15:09:08  INFO     [drift_monitor] Starting (restart #0)

@@ -242,3 +242,7 @@
 2026-04-26 14:33:41  INFO     [drift_monitor]  Only 1 trade outcomes recorded — need 50 before drift evaluation begins
 2026-04-26 14:38:41  INFO     [drift_monitor]  Only 1 trade outcomes recorded — need 50 before drift evaluation begins
 2026-04-26 14:43:41  INFO     [drift_monitor]  Only 1 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 14:53:56  INFO     [drift_monitor]  Drift monitor started  window=50  threshold=0.53  cooldown=12h  interval=300s
+2026-04-26 14:58:56  INFO     [drift_monitor]  Only 0 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-26 14:58:59,750 INFO [kalshi_bot_v8] [WATCHDOG] Hot-reloaded model (trained 2026-04-26T19:53:30.862100+00:00) | 128 features | confidence_tau=0.7400 | kelly_win_rate=0.6667
+2026-04-26 15:09:09  INFO     [drift_monitor]  Drift monitor started  window=50  threshold=0.53  cooldown=12h  interval=300s
