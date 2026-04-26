@@ -38,5 +38,7 @@
     "TRADE_MODE": "first_signal",
     "KALSHI_WS_URL": "wss://api.elections.kalshi.com/trade-api/ws/v2",
     "ML_INFERENCE_WINDOW_MIN": 2.0,
-    "MAX_STRIKE_DISADVANTAGE_BPS": 20.0
+    "MAX_STRIKE_DISADVANTAGE_BPS": 20.0,
+    "ATR_MIN": 15.0,
+    "ATR_MAX": 30.0
 }

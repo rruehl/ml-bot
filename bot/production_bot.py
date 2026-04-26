@@ -9,7 +9,8 @@ Architecture changes from v7:
   - DELETED : UT_BOT_SENSITIVITY, UT_BOT_ATR_PERIOD, CANDLE_TIMEFRAME params
   - DELETED : STOP_ATR_* thresholds used for ATR-bucketed Kelly / stop sizing
   - ADDED   : _MLInference — loads artifacts once at startup, runs predict_proba live
-  - ADDED   : _build_live_feature_vector() — converts Kalshi OB snapshot → 64-col DataFrame
+  - ADDED   : _calculate_live_atr_14() — live ATR gate matching train.py _compute_atr math
+  - CHANGED : ML features now sourced from data/btc_1min.csv via BTCMinuteProcessor
   - ADDED   : SharedState.ml_* fields replace ut_signal / ut_atr / ut_stop
   - CHANGED : on_tick entry gate now checks ml_confidence >= ML_CONFIDENCE_TAU
   - CHANGED : RiskEngine.calculate_qty uses flat Kelly (no ATR bucket)
@@ -46,6 +47,7 @@ VERSION = "8.0.0 - MLSniper"
 current_dir  = Path(__file__).resolve().parent
 project_root = current_dir.parent
 sys.path.append(str(current_dir))
+sys.path.append(str(project_root))
 load_dotenv(dotenv_path=project_root / ".env")
 
 STOP_DEBUG_LOG = str(project_root / "logs" / "stop_debug.log")
@@ -104,6 +106,10 @@ class Config:
     # For YES: (Strike - Spot) / Spot * 10000. For NO: (Spot - Strike) / Spot * 10000.
     # Positive = strike disadvantageous. Reject if above this threshold.
     MAX_STRIKE_DISADVANTAGE_BPS = 20.0
+    # ATR volatility gate: live ATR_14 (in USD) must fall within this band.
+    # Mirrors the atr_min/atr_max channel in train.py.
+    ATR_MIN = 15.0
+    ATR_MAX = 30.0
 
     # ── Entry window ──────────────────────────────────────────────────────────
     TIME_ENTRY_MIN_MIN   = 15      # Don't enter if more than this many minutes left
@@ -328,52 +334,21 @@ class _MLInference:
 ML = _MLInference()
 
 
-def _build_live_feature_vector(shared: "SharedState") -> pd.DataFrame | None:
+def _calculate_live_atr_14(df: pd.DataFrame) -> float:
     """
-    Builds the 64-column feature DataFrame from the live Coinbase BTC/USD order book.
-
-    The model was trained on Coinbase order book snapshots, NOT on Kalshi prices.
-    Features are:
-      bids[N].price  — Nth level bid price in USD (e.g. 97,432.10)
-      asks[N].price  — Nth level ask price in USD
-      spread         — best_ask - best_bid in USD
-      spread_bps_ma20 — 20-observation rolling mean of spread-in-bps
-
-    bids are sorted descending (index 0 = best bid),
-    asks are sorted ascending  (index 0 = best ask).
-
-    If the Coinbase OB is stale or empty, returns None so the caller can skip inference.
+    Computes a 14-period EWM ATR from OHLC data, matching _compute_atr in train.py exactly.
+    Operates on a single-asset DataFrame (no symbol grouping loop needed).
     """
-    if shared.coinbase_ob_stale:
-        return None
-
-    bids = shared.coinbase_bids   # [[price, size], ...] descending
-    asks = shared.coinbase_asks   # [[price, size], ...] ascending
-
-    if not bids or not asks:
-        return None
-
-    bids_price = [level[0] for level in bids]   # USD prices, descending
-    asks_price = [level[0] for level in asks]   # USD prices, ascending
-
-    spread = asks_price[0] - bids_price[0] if bids_price and asks_price else 0.0
-
-    row: dict[str, float] = {}
-    for feat in ML.features:
-        if feat == "spread":
-            row[feat] = spread
-        elif feat == "spread_bps_ma20":
-            row[feat] = shared.spread_bps_ma20
-        elif feat.startswith("bids["):
-            idx = int(feat.split("[")[1].split("]")[0])
-            row[feat] = bids_price[idx] if idx < len(bids_price) else 0.0
-        elif feat.startswith("asks["):
-            idx = int(feat.split("[")[1].split("]")[0])
-            row[feat] = asks_price[idx] if idx < len(asks_price) else 0.0
-        else:
-            row[feat] = 0.0
-
-    return pd.DataFrame([row], columns=ML.features)
+    high       = df["high"].values.astype(np.float64)
+    low        = df["low"].values.astype(np.float64)
+    close      = df["close"].values.astype(np.float64)
+    prev_close = np.concatenate([[np.nan], close[:-1]])
+    tr = np.maximum.reduce([
+        high - low,
+        np.abs(high - prev_close),
+        np.abs(low - prev_close),
+    ])
+    return float(pd.Series(tr).ewm(span=14, adjust=False).mean().iloc[-1])
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -427,31 +402,12 @@ class RiskEngine:
 
 class SharedState:
     """
-    Replaces the v7 SharedState that held ut_signal / ut_atr / ut_stop.
-
-    Stores:
-      - The full Coinbase BTC/USD order book (bids / asks as sorted price arrays)
-        used to build the ML feature vector.  Training data came from Coinbase,
-        NOT from the Kalshi order book.
-      - A 20-tick rolling buffer of spread values to compute spread_bps_ma20,
-        matching the feature that was computed over a 20-observation window in
-        training.
-      - The most recent ML inference result.
-      - The latest BTC mid price (convenience, derived from the OB).
+    Stores the live BTC spot price (from the CCXT ticker stream) for the
+    moneyness gate and heartbeat logs, plus the per-session ML inference result.
     """
-    SPREAD_MA_WINDOW = 20
 
     def __init__(self):
-        self.latest_btc     = 0.0
-
-        # Coinbase BTC/USD order book — full depth arrays
-        # Each entry is [price (float $), size (float BTC)]
-        self.coinbase_bids: list = []   # sorted descending by price
-        self.coinbase_asks: list = []   # sorted ascending by price
-        self.coinbase_ob_ts: float = 0.0   # wall-clock time of last OB update
-
-        # Rolling spread buffer for spread_bps_ma20
-        self._spread_history: deque = deque(maxlen=self.SPREAD_MA_WINDOW)
+        self.latest_btc: float = 0.0
 
         # ML inference result — locked in ONCE per session at session open.
         # ml_session_fired prevents re-running predict_proba after the first call.
@@ -460,36 +416,6 @@ class SharedState:
         self.ml_proba_up     = 0.0   # raw model output
         self.ml_birth_ts     = 0.0   # wall-clock time inference fired
         self.ml_session_fired = False # True once predict_proba has run this session
-
-    def update_coinbase_ob(self, bids: list, asks: list):
-        """
-        Called every time watch_exchange_loop receives a Coinbase OB update.
-        bids / asks are CCXT format: [[price, size], ...] already sorted
-        (bids descending, asks ascending).
-        """
-        self.coinbase_bids  = bids
-        self.coinbase_asks  = asks
-        self.coinbase_ob_ts = time.time()
-
-        if bids and asks:
-            mid    = (bids[0][0] + asks[0][0]) / 2.0
-            spread = asks[0][0] - bids[0][0]
-            self.latest_btc = float(mid)
-            # spread in bps relative to mid
-            spread_bps = (spread / mid) * 10_000.0 if mid > 0 else 0.0
-            self._spread_history.append(spread_bps)
-
-    @property
-    def spread_bps_ma20(self) -> float:
-        """20-tick rolling mean of spread-in-bps. Falls back to latest if buffer not full."""
-        if not self._spread_history:
-            return 0.0
-        return float(np.mean(self._spread_history))
-
-    @property
-    def coinbase_ob_stale(self) -> bool:
-        """True if we haven't received a Coinbase OB update in > 10 seconds."""
-        return (time.time() - self.coinbase_ob_ts) > 10.0
 
     def update_ml(self, direction: int, confidence: float, proba_up: float):
         self.ml_direction    = direction
@@ -505,10 +431,6 @@ class SharedState:
         self.ml_proba_up     = 0.0
         self.ml_birth_ts     = 0.0
         self.ml_session_fired = False
-
-    def update_btc(self, price: float):
-        """Kept for back-compat; prefer update_coinbase_ob which sets latest_btc."""
-        self.latest_btc = price
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -1614,23 +1536,21 @@ class StrategyController:
 
     # ── ML inference gate ─────────────────────────────────────────────────────
 
-    def _run_ml_inference(self, data: dict) -> tuple[bool, str]:
+    async def _run_ml_inference(self, data: dict) -> tuple[bool, str]:
         """
         Runs the ML inference pipeline exactly ONCE per 15-minute session,
         within ML_INFERENCE_WINDOW_MIN minutes of session open.
 
-        The model was trained on order book snapshots taken at session open to
-        predict the full 15-minute outcome. Calling it later in the session is
-        out-of-distribution and meaningless.
+        Features are read from data/btc_1min.csv (written by the background collector)
+        and processed by BTCMinuteProcessor — the same pipeline used at training time.
 
         Gates (in order):
           1. Session-open window  — only fire within first N minutes of session
-          2. Already-fired guard  — inference is locked in for rest of session
-          3. Kalshi spread gate   — need a liquid Kalshi market to trade into
-          4. Coinbase OB staleness — need a fresh feature source
-          5. Feature build + predict_proba
-          6. Confidence tau gate  — reject low-conviction predictions
-          7. Moneyness gate       — reject if Kalshi strike is too far against direction
+          2. Kalshi spread gate   — need a liquid Kalshi market to trade into
+          3. ATR volatility gate  — reject if live ATR_14 outside [ATR_MIN, ATR_MAX]
+          4. Feature build + predict_proba via BTCMinuteProcessor
+          5. Confidence tau gate  — reject low-conviction predictions
+          6. Moneyness gate       — reject if Kalshi strike is too far against direction
 
         Returns (should_trade: bool, filter_reason: str).
         The ml_direction/ml_confidence stored in SharedState are the definitive
@@ -1646,7 +1566,7 @@ class StrategyController:
             # Session is already underway — use the cached signal if we have one
             if self.shared.ml_direction is None:
                 return False, f"inference_window_expired_{minutes_left:.1f}m_left"
-            # Signal already cached from session open — fall through to gate 7
+            # Signal already cached from session open — fall through to gate 6
             direction  = self.shared.ml_direction
             confidence = self.shared.ml_confidence
             proba_up   = self.shared.ml_proba_up
@@ -1656,32 +1576,52 @@ class StrategyController:
             if kalshi_spread > Config.ML_SPREAD_MAX_CENTS:
                 return False, f"kalshi_spread_too_wide_{kalshi_spread}c"
 
-            # Gate 3: Coinbase OB freshness
-            if self.shared.coinbase_ob_stale:
-                return False, "coinbase_ob_stale"
+            # Allow the background collector to finish flushing the current minute bar.
+            await asyncio.sleep(2.0)
 
-            # Gate 4: Build feature vector and run model
+            # Gates 3–4: Read CSV, compute ATR, engineer features, run model
             try:
-                feat_df = _build_live_feature_vector(self.shared)
-                if feat_df is None:
-                    return False, "coinbase_ob_empty"
+                from ml.preprocess import BTCMinuteProcessor, PreprocessingConfig
 
-                direction, confidence, proba_up = ML.predict(feat_df)
+                csv_path = project_root / "data" / "btc_1min.csv"
+                raw_df = (
+                    pd.read_csv(csv_path, parse_dates=["timestamp"])
+                    .tail(100)
+                    .reset_index(drop=True)
+                )
+                raw_df["symbol"] = "BTC_USDT"
+
+                # Gate 3: ATR volatility gate
+                current_atr = _calculate_live_atr_14(raw_df)
+                if current_atr < Config.ATR_MIN or current_atr > Config.ATR_MAX:
+                    return False, f"atr_outside_range_{current_atr:.2f}"
+
+                # Gate 4: Feature engineering via BTCMinuteProcessor
+                _dummy = Path("/dev/null")
+                proc_config = PreprocessingConfig(
+                    macro_csv_path=_dummy,
+                    micro_data_dir=_dummy,
+                    output_dir=_dummy,
+                )
+                processor = BTCMinuteProcessor(csv_path=csv_path, config=proc_config)
+                processor.data = raw_df  # bypass load_data() / clean_data()
+                feat_df_full = processor.engineer_features()
+                feat_row = feat_df_full.iloc[[-1]][ML.features]
+
+                direction, confidence, proba_up = ML.predict(feat_row)
                 self.shared.update_ml(direction, confidence, proba_up)
 
                 dir_str = "UP" if direction == 1 else "DN"
-                btc_bid = self.shared.coinbase_bids[0][0] if self.shared.coinbase_bids else 0
-                btc_ask = self.shared.coinbase_asks[0][0] if self.shared.coinbase_asks else 0
                 self.log("ML_INFERENCE", {
                     "ticker":        data["ticker"],
                     "ml_direction":  direction,
                     "ml_confidence": confidence,
                     "ml_proba_up":   proba_up,
                     "ml_birth_ts":   self.shared.ml_birth_ts,
+                    "atr_14":        current_atr,
                 }, f"{dir_str} | conf={confidence:.4f} | proba_up={proba_up:.4f} | "
                    f"tau={Config.ML_CONFIDENCE_TAU:.3f} | window={minutes_left:.1f}m left | "
-                   f"BTC_bid={btc_bid:.2f} BTC_ask={btc_ask:.2f} "
-                   f"spread_bps_ma20={self.shared.spread_bps_ma20:.2f}")
+                   f"atr={current_atr:.2f} | BTC={self.shared.latest_btc:.2f}")
 
             except Exception as e:
                 setup_logging().error(f"ML inference error: {e}")
@@ -1828,7 +1768,7 @@ class StrategyController:
             return
 
         # ── ML INFERENCE ──────────────────────────────────────────────────────
-        should_trade, filter_reason = self._run_ml_inference(data)
+        should_trade, filter_reason = await self._run_ml_inference(data)
         if not should_trade:
             ctx["filter_reason"] = filter_reason
             return
@@ -2004,26 +1944,23 @@ class StrategyController:
 
 async def watch_exchange_loop(ex, bot: StrategyController):
     """
-    Streams BTC/USD order book from Coinbase (via CCXT) into SharedState.
-
-    The full bids/asks depth arrays are stored — NOT just the mid price —
-    because _build_live_feature_vector() needs up to ~50 levels of Coinbase
-    order book depth to match the training feature schema.
+    Streams the BTC/USD ticker from Coinbase (via CCXT) to maintain a live spot price.
+    Only the mid-price is needed — for the moneyness gate and heartbeat logs.
     """
     name      = getattr(ex, "id", str(ex))
     connected = False
     while True:
         try:
             if not connected:
-                print(f"[WS {name}] Connecting to BTC/USD orderbook stream...")
-            ob = await ex.watch_order_book(Config.SYMBOL)
+                print(f"[WS {name}] Connecting to BTC/USD ticker stream...")
+            ticker = await ex.watch_ticker(Config.SYMBOL)
             if not connected:
-                print(f"[WS {name}] Stream active — caching full OB depth for ML inference.")
+                print(f"[WS {name}] Ticker stream active.")
                 connected = True
-            if ob and ob.get("bids") and ob.get("asks"):
-                # Store full depth arrays; update_coinbase_ob also computes latest_btc
-                # and maintains the rolling spread_bps buffer for spread_bps_ma20
-                bot.shared.update_coinbase_ob(ob["bids"], ob["asks"])
+            bid = ticker.get("bid")
+            ask = ticker.get("ask")
+            if bid and ask:
+                bot.shared.latest_btc = (bid + ask) / 2.0
         except Exception as e:
             connected = False
             print(f"[WS {name}] Reconnecting: {type(e).__name__}: {e}")
