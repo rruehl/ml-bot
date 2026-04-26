@@ -6,6 +6,7 @@ Starts and supervises all system components as persistent subprocesses:
   - collector/btc_ws_collector.py  (24/7 data collection)
   - bot/production_bot.py          (24/7 live trading)
   - bot/dashboard.py               (24/7 monitoring UI)
+  - bot/drift_monitor.py           (concept drift detection + auto-retrain)
 
 Schedules weekly model retraining every Sunday at midnight CT:
   preprocess.py → train.py → artifacts/model_updated.flag
@@ -32,9 +33,10 @@ PROJECT_ROOT  = Path(__file__).resolve().parent
 VENV_PYTHON   = PROJECT_ROOT / "venv" / "bin" / "python3"
 LOG_FILE      = PROJECT_ROOT / "logs" / "orchestrator.log"
 
-COLLECTOR_CMD  = [str(VENV_PYTHON), "collector/btc_ws_collector.py"]
-BOT_CMD        = [str(VENV_PYTHON), "bot/production_bot.py"]
-DASHBOARD_CMD  = [str(VENV_PYTHON), "bot/dashboard.py"]
+COLLECTOR_CMD      = [str(VENV_PYTHON), "collector/btc_ws_collector.py"]
+BOT_CMD            = [str(VENV_PYTHON), "bot/production_bot.py"]
+DASHBOARD_CMD      = [str(VENV_PYTHON), "bot/dashboard.py"]
+DRIFT_MONITOR_CMD  = [str(VENV_PYTHON), "bot/drift_monitor.py"]
 PREPROCESS_CMD = [str(VENV_PYTHON), "ml/preprocess.py",
                   "--input",  "data/btc_1min.csv",
                   "--output", "data/processed/"]
@@ -201,10 +203,11 @@ async def main() -> None:
     log.info(f"Python:       {VENV_PYTHON}")
     log.info("=" * 60)
 
-    collector  = ManagedProcess("collector",  COLLECTOR_CMD,  restart_delay=10.0)
-    bot        = ManagedProcess("bot",        BOT_CMD,        restart_delay=15.0)
-    dashboard  = ManagedProcess("dashboard",  DASHBOARD_CMD,  restart_delay=10.0)
-    processes  = [collector, bot, dashboard]
+    collector      = ManagedProcess("collector",      COLLECTOR_CMD,     restart_delay=10.0)
+    bot            = ManagedProcess("bot",            BOT_CMD,           restart_delay=15.0)
+    dashboard      = ManagedProcess("dashboard",      DASHBOARD_CMD,     restart_delay=10.0)
+    drift_monitor  = ManagedProcess("drift_monitor",  DRIFT_MONITOR_CMD, restart_delay=10.0)
+    processes      = [collector, bot, dashboard, drift_monitor]
 
     # Weekly retraining: Sunday 00:00 CT
     scheduler = AsyncIOScheduler(timezone="America/Chicago")
@@ -235,11 +238,12 @@ async def main() -> None:
     for sig in (signal.SIGINT, signal.SIGTERM):
         loop.add_signal_handler(sig, _handle_signal)
 
-    # Start all three supervisors as concurrent tasks
+    # Start all supervisors as concurrent tasks
     tasks = [
-        asyncio.create_task(collector.supervise(),  name="supervisor-collector"),
-        asyncio.create_task(bot.supervise(),        name="supervisor-bot"),
-        asyncio.create_task(dashboard.supervise(),  name="supervisor-dashboard"),
+        asyncio.create_task(collector.supervise(),      name="supervisor-collector"),
+        asyncio.create_task(bot.supervise(),            name="supervisor-bot"),
+        asyncio.create_task(dashboard.supervise(),      name="supervisor-dashboard"),
+        asyncio.create_task(drift_monitor.supervise(),  name="supervisor-drift"),
     ]
 
     # Wait until a shutdown signal arrives
