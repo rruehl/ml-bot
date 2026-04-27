@@ -1237,7 +1237,11 @@ def get_data():
                 idir = None
             dir_str = "UP" if idir == 1 else "DN" if idir == 0 else "--"
 
-            if iconf < ml_tau:
+            # Use the tau that was active at inference time (logged as ml_tau column).
+            # Fall back to the current live ml_tau only for legacy rows that predate this column.
+            row_tau = safe_float(ir.get("ml_tau", 0.0))
+            effective_tau = row_tau if row_tau > 0 else ml_tau
+            if iconf < effective_tau:
                 status = "tau_gate_fail"
             else:
                 window_end      = ir["timestamp"] + pd.Timedelta(minutes=6)

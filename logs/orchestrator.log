@@ -268,3 +268,55 @@
 2026-04-26 15:09:08  INFO     [bot] Starting (restart #0)
 2026-04-26 15:09:08  INFO     [dashboard] Starting (restart #0)
 2026-04-26 15:09:08  INFO     [drift_monitor] Starting (restart #0)
+2026-04-27 06:51:34  INFO     Shutdown signal received
+2026-04-27 06:51:34  INFO     Stopping all processes ...
+2026-04-27 06:51:34  INFO     [collector] Sending SIGTERM ...
+2026-04-27 06:51:34  WARNING  [drift_monitor] Exited (code=-2, uptime=56546s) — restarting in 10.0s
+2026-04-27 06:51:34  WARNING  [dashboard] Exited (code=0, uptime=56546s) — restarting in 10.0s
+2026-04-27 06:51:35  WARNING  [collector] Exited (code=0, uptime=56547s) — restarting in 10.0s
+2026-04-27 06:51:35  INFO     [collector] Supervisor stopped.
+2026-04-27 06:51:35  INFO     [collector] Stopped cleanly.
+2026-04-27 06:51:35  INFO     [bot] Sending SIGTERM ...
+2026-04-27 06:51:35  WARNING  [bot] Exited (code=-15, uptime=56547s) — restarting in 15.0s
+2026-04-27 06:51:35  INFO     [bot] Supervisor stopped.
+2026-04-27 06:51:35  INFO     [bot] Stopped cleanly.
+2026-04-27 06:51:35  INFO     Orchestrator stopped.
+2026-04-27 07:01:19  INFO     ============================================================
+2026-04-27 07:01:19  INFO     ML Trading System Orchestrator starting
+2026-04-27 07:01:19  INFO     Project root: /Users/ryanruehl/Desktop/ML Bot
+2026-04-27 07:01:19  INFO     Python:       /Users/ryanruehl/Desktop/ML Bot/venv/bin/python3
+2026-04-27 07:01:19  INFO     ============================================================
+2026-04-27 07:01:19  INFO     Retraining scheduler started — next run: 2026-05-03 00:00:00-05:00
+2026-04-27 07:01:19  INFO     [collector] Starting (restart #0)
+2026-04-27 07:01:19  INFO     [bot] Starting (restart #0)
+2026-04-27 07:01:19  INFO     [dashboard] Starting (restart #0)
+2026-04-27 07:01:19  INFO     [drift_monitor] Starting (restart #0)
+2026-04-27 07:14:55  INFO     Shutdown signal received
+2026-04-27 07:14:55  INFO     Stopping all processes ...
+2026-04-27 07:14:55  INFO     [collector] Sending SIGTERM ...
+2026-04-27 07:14:55  WARNING  [collector] Exited (code=0, uptime=816s) — restarting in 10.0s
+2026-04-27 07:14:55  INFO     [collector] Supervisor stopped.
+2026-04-27 07:14:55  INFO     [collector] Stopped cleanly.
+2026-04-27 07:14:55  INFO     [bot] Sending SIGTERM ...
+2026-04-27 07:14:55  WARNING  [bot] Exited (code=-15, uptime=816s) — restarting in 15.0s
+2026-04-27 07:14:55  INFO     [bot] Supervisor stopped.
+2026-04-27 07:14:55  INFO     [bot] Stopped cleanly.
+2026-04-27 07:14:55  INFO     [dashboard] Sending SIGTERM ...
+2026-04-27 07:14:55  WARNING  [dashboard] Exited (code=-15, uptime=816s) — restarting in 10.0s
+2026-04-27 07:14:55  INFO     [dashboard] Supervisor stopped.
+2026-04-27 07:14:55  INFO     [dashboard] Stopped cleanly.
+2026-04-27 07:14:55  INFO     [drift_monitor] Sending SIGTERM ...
+2026-04-27 07:14:55  WARNING  [drift_monitor] Exited (code=-15, uptime=816s) — restarting in 10.0s
+2026-04-27 07:14:55  INFO     [drift_monitor] Supervisor stopped.
+2026-04-27 07:14:55  INFO     [drift_monitor] Stopped cleanly.
+2026-04-27 07:14:55  INFO     Orchestrator stopped.
+2026-04-27 07:17:56  INFO     ============================================================
+2026-04-27 07:17:56  INFO     ML Trading System Orchestrator starting
+2026-04-27 07:17:56  INFO     Project root: /Users/ryanruehl/Desktop/ML Bot
+2026-04-27 07:17:56  INFO     Python:       /Users/ryanruehl/Desktop/ML Bot/venv/bin/python3
+2026-04-27 07:17:56  INFO     ============================================================
+2026-04-27 07:17:56  INFO     Retraining scheduler started — next run: 2026-05-03 00:00:00-05:00
+2026-04-27 07:17:56  INFO     [collector] Starting (restart #0)
+2026-04-27 07:17:56  INFO     [bot] Starting (restart #0)
+2026-04-27 07:17:56  INFO     [dashboard] Starting (restart #0)
+2026-04-27 07:17:56  INFO     [drift_monitor] Starting (restart #0)

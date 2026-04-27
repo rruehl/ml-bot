@@ -163,3 +163,5 @@ Opens a Flask UI for monitoring trades, P&L, and signal activity.
 | `logs/bot.log` | Bot system log |
 | `.env` | Kalshi API credentials (never commit) |
 | `kalshi.key` | Kalshi RSA private key (never commit) |
+
+python3 ml/train.py --confidence_tau 0.60 --atr_min 15.0 --atr_max 30.0

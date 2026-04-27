@@ -614,7 +614,7 @@ LOG_COLUMNS = [
     "yes_liq", "no_liq", "obi",
     "bankroll", "rolling_24h_loss",
     # ML replaces ut_signal / ut_atr / ut_stop
-    "ml_direction", "ml_confidence", "ml_proba_up",
+    "ml_direction", "ml_confidence", "ml_proba_up", "ml_tau",
     "ml_birth_ts", "signal_age_min",
     "ob_stale", "ob_last_delta_age", "ws_connected",
     "filter_reason",
@@ -1620,6 +1620,9 @@ class StrategyController:
         """
         minutes_left = data["minutes_left"]
         session_open_threshold = Config.TIME_ENTRY_MIN_MIN - Config.ML_INFERENCE_WINDOW_MIN
+        # Snapshot tau once for this entire call — used for gate check AND logging so
+        # both always reflect the same value, even if config.json is hot-reloaded mid-call.
+        tau_at_inference = Config.ML_CONFIDENCE_TAU
 
         if self.shared.ml_session_fired:
             # Inference already ran this session — reuse the cached prediction.
@@ -1684,18 +1687,20 @@ class StrategyController:
                     "ml_direction":  direction,
                     "ml_confidence": confidence,
                     "ml_proba_up":   proba_up,
+                    "ml_tau":        tau_at_inference,
                     "ml_birth_ts":   self.shared.ml_birth_ts,
                     "atr_14":        current_atr,
                 }, f"{dir_str} | conf={confidence:.4f} | proba_up={proba_up:.4f} | "
-                   f"tau={Config.ML_CONFIDENCE_TAU:.3f} | window={minutes_left:.1f}m left | "
+                   f"tau={tau_at_inference:.3f} | window={minutes_left:.1f}m left | "
                    f"atr={current_atr:.2f} | BTC={self.shared.latest_btc:.2f}")
 
             except Exception as e:
                 setup_logging().error(f"ML inference error: {e}")
                 return False, f"inference_exception_{e}"
 
-        # Gate 5: Confidence threshold (checked every tick against the live cached signal)
-        if confidence < Config.ML_CONFIDENCE_TAU:
+        # Gate 5: Confidence threshold — use tau_at_inference (snapshotted at function entry)
+        # so the gate value always matches what was logged in the ML_INFERENCE row.
+        if confidence < tau_at_inference:
             return False, f"confidence_below_tau_{confidence:.4f}"
 
         # Gate 6 (always checked, even for cached signals): Moneyness gate.
