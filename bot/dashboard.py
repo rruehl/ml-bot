@@ -317,10 +317,11 @@ HTML_TEMPLATE = """
     <table>
         <thead>
             <tr>
-                <th style="width:20%;">Time</th>
-                <th style="width:20%;">Prediction</th>
-                <th style="width:25%;">Confidence</th>
-                <th>Status</th>
+                <th style="width:18%;">Time</th>
+                <th style="width:18%;">Prediction</th>
+                <th style="width:20%;">Confidence</th>
+                <th style="width:22%;">Status</th>
+                <th>Outcome</th>
             </tr>
         </thead>
         <tbody>
@@ -346,10 +347,21 @@ HTML_TEMPLATE = """
                     <span class="orange">{{ row.status }}</span>
                     {% endif %}
                 </td>
+                <td>
+                    {% if row.outcome == 'correct' %}
+                    <span class="green">✓ correct</span>
+                    {% elif row.outcome == 'wrong' %}
+                    <span class="red">✗ wrong</span>
+                    {% elif row.outcome == 'pending' %}
+                    <span style="color:var(--muted);">pending</span>
+                    {% else %}
+                    <span style="color:var(--muted);">{{ row.outcome }}</span>
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
             {% if not inference_history %}
-            <tr><td colspan="4" style="text-align:center;padding:12px;color:var(--muted);">No ML inferences yet</td></tr>
+            <tr><td colspan="5" style="text-align:center;padding:12px;color:var(--muted);">No ML inferences yet</td></tr>
             {% endif %}
         </tbody>
     </table>
@@ -1225,8 +1237,21 @@ def get_data():
             })
 
         # ── Latest ML inferences ───────────────────────────────────────────────
-        infer_rows   = df[df["event"] == "ML_INFERENCE"].tail(5)
+        infer_rows   = df[df["event"] == "ML_INFERENCE"].tail(50)
         fill_events  = df[df["event"].isin(["FILL_CONFIRMED", "PAPER_BUY"])]
+
+        settle_events = df[df["event"] == "SETTLE_VERIFIED"]
+        settle_by_ticker = {}
+        for _, sv in settle_events.iterrows():
+            sv_ticker = str(sv.get("ticker", ""))
+            # SETTLE_VERIFIED rows omit stop_active, shifting columns left by one;
+            # the settlement text ends up in reconcile_delta instead of msg.
+            sv_text = " ".join(str(sv.get(col, "")) for col in ("msg", "reconcile_delta"))
+            if "Market settled YES" in sv_text:
+                settle_by_ticker[sv_ticker] = "YES"
+            elif "Market settled NO" in sv_text:
+                settle_by_ticker[sv_ticker] = "NO"
+
         inference_history = []
         for _, ir in infer_rows.iloc[::-1].iterrows():
             iconf    = safe_float(ir.get("ml_confidence", 0.0))
@@ -1251,11 +1276,23 @@ def get_data():
                 ]
                 status = "success" if not following_fills.empty else "filtered"
 
+            ir_ticker  = str(ir.get("ticker", ""))
+            settlement = settle_by_ticker.get(ir_ticker)
+            if idir is None:
+                outcome = "--"
+            elif settlement is None:
+                outcome = "pending"
+            elif (idir == 1 and settlement == "YES") or (idir == 0 and settlement == "NO"):
+                outcome = "correct"
+            else:
+                outcome = "wrong"
+
             inference_history.append({
                 "time":       ir["timestamp"].astimezone(central).strftime("%H:%M:%S"),
                 "direction":  dir_str,
                 "confidence": round(iconf * 100, 1),
                 "status":     status,
+                "outcome":    outcome,
             })
 
         config_sections = build_config_sections(cfg)
