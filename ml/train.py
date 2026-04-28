@@ -35,6 +35,7 @@ from sklearn.metrics import (
     mean_absolute_error, mean_squared_error, precision_recall_fscore_support
 )
 from sklearn.calibration import calibration_curve, CalibratedClassifierCV
+from sklearn.frozen import FrozenEstimator
 from sklearn.utils.class_weight import compute_sample_weight
 from sklearn.impute import SimpleImputer
 from sklearn.feature_selection import SelectKBest, f_classif, mutual_info_classif
@@ -865,7 +866,7 @@ class TwoClassConfidenceClassifier:
         logger.info(f"Calibrating two-class probabilities using {method} method")
         
         self.model = CalibratedClassifierCV(
-            self.model, method=method, cv='prefit'
+            FrozenEstimator(self.model), method=method
         )
         self.model.fit(X_val, y_direction_val)
         self.is_calibrated = True
@@ -1066,7 +1067,7 @@ class TwoStageClassifier:
         
         # Calibrate trade model
         self.trade_model = CalibratedClassifierCV(
-            self.trade_model, method=method, cv='prefit'
+            FrozenEstimator(self.trade_model), method=method
         )
         self.trade_model.fit(X_val, y_binary_val)
         
@@ -1077,7 +1078,7 @@ class TwoStageClassifier:
             y_val_direction_trade = y_direction_val[trade_mask]
             
             self.direction_model = CalibratedClassifierCV(
-                self.direction_model, method=method, cv='prefit'
+                FrozenEstimator(self.direction_model), method=method
             )
             self.direction_model.fit(X_val_trade, y_val_direction_trade)
         

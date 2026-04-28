@@ -173,7 +173,7 @@ HTML_TEMPLATE = """
         .chart-btns{display:flex;gap:4px;}
         .btn-t{background:var(--border);border:1px solid #333;color:var(--muted);padding:3px 7px;border-radius:4px;cursor:pointer;font-size:.7rem;font-family:inherit;}
         .btn-t.active{background:var(--green);color:#000;font-weight:700;border-color:var(--green);}
-        .chart-wrap{position:relative;height:200px;}
+        .chart-wrap{position:relative;height:300px;}
         table{width:100%;border-collapse:collapse;font-size:.78rem;}
         th{text-align:left;color:var(--muted);border-bottom:1px solid var(--border);padding:5px 0;font-size:.65rem;text-transform:uppercase;letter-spacing:.8px;}
         td{padding:5px 0;border-bottom:1px solid #1a1a1a;vertical-align:middle;}
@@ -202,8 +202,8 @@ HTML_TEMPLATE = """
         </div>
         <div style="font-size:.65rem;color:var(--muted);margin-top:2px;">
             {{ mode }} &nbsp;·&nbsp; {{ 'Online' if is_active else 'Offline' }}
-            &nbsp;·&nbsp; <span style="color:var(--blue);">Tau:{{ "{:.3f}".format(ml_tau) }}</span>
-            &nbsp;·&nbsp; <span style="color:var(--blue);">ATR:[{{ atr_min|int }}-{{ atr_max|int }}]</span>
+            &nbsp;·&nbsp; <span style="color:var(--blue);">Runtime τ:{{ "{:.3f}".format(ml_tau) }}</span>
+            &nbsp;·&nbsp; <span style="color:var(--blue);">ATR:{{ atr_min|int }}–{{ atr_max|int }}</span>
             {% if not ws_connected %}<span style="color:var(--red);"> · WS DISCONNECTED</span>{% endif %}
             {% if ob_stale %}<span style="color:var(--yellow);"> · Stale OB ({{ ob_delta_age }}s)</span>{% endif %}
         </div>
@@ -212,7 +212,7 @@ HTML_TEMPLATE = """
         <button id="pauseBtn" class="pause-btn" onclick="togglePause()">⏸ Pause</button>
         <div class="header-right">
             {{ last_update }} CST<br>
-            <span id="refresh-status" style="color:#333;">refresh 10s</span>
+            <span id="refresh-status" style="color:#555;">↻ <span id="countdown">10</span>s</span>
         </div>
     </div>
 </div>
@@ -260,26 +260,27 @@ HTML_TEMPLATE = """
     </div>
 </div>
 
-<!-- Signal + Market -->
+<!-- Quick Stats + Market -->
 <div class="grid-2">
     <div class="card">
-        <div class="card-title">ML Signal</div>
-        <div style="margin:4px 0;">
-            <span class="sig-pill {{ 'sig-buy' if ml_direction == 1 else 'sig-sell' if ml_direction == 0 else 'sig-idle' }}">
-                {{ 'YES (UP)' if ml_direction == 1 else 'NO (DOWN)' if ml_direction == 0 else 'IDLE' }}
-            </span>
+        <div class="card-title">Performance</div>
+        <div class="sub" style="line-height:2.2;">
+            Win Rate: <span class="{{ 'green' if win_rate >= 55 else 'yellow' if win_rate >= 50 else 'red' }}">{{ "{:.1f}".format(win_rate) }}%</span>
+            &nbsp;·&nbsp; <span class="blue">{{ wins }}W / {{ losses }}L</span><br>
+            ROI: <span class="{{ 'green' if roi >= 0 else 'red' }}">{{ "{:+.2f}".format(roi) }}%</span>
+            &nbsp;·&nbsp; P&amp;L: <span class="{{ 'green' if realized_pnl >= 0 else 'red' }}">${{ "{:+.2f}".format(realized_pnl) }}</span><br>
+            Drift (L50): <span class="{{ 'green' if drift_win_rate >= 55 else 'orange' if drift_win_rate >= 50 else 'red' }}">{{ "{:.1f}".format(drift_win_rate) }}%</span>
+            &nbsp;·&nbsp; Kelly risk: <span class="blue">{{ "{:.2f}".format(active_risk_pct) }}%</span>
         </div>
-        <div class="sub">Conf: {{ "{:.1f}".format(ml_confidence * 100) }}% &nbsp;·&nbsp; τ={{ "{:.3f}".format(ml_tau) }}</div>
-        <div class="sub">Age: {{ signal_age }}m &nbsp;·&nbsp; Fired: {{ ml_fired_at }}</div>
     </div>
     <div class="card">
         <div class="card-title">Market</div>
-        <div class="sub">
+        <div class="sub" style="line-height:2.2;">
             <span style="color:var(--text);font-size:.8rem;">{{ ticker }}</span><br>
-            BTC: <span class="yellow">${{ "{:,.2f}".format(btc_price) }}</span><br>
-            Expires: <span class="{{ 'red' if time_left < 3 else 'yellow' if time_left < 7 else '' }}">{{ "{:.1f}".format(time_left) }}m</span>
+            BTC: <span class="yellow">${{ "{:,.2f}".format(btc_price) }}</span>
             &nbsp;·&nbsp; Strike: ${{ "{:,.0f}".format(strike) }}<br>
-            Live ATR: <span class="{{ 'green' if atr_min <= live_atr <= atr_max else 'red' }}">${{ "{:.2f}".format(live_atr) }}</span>
+            Expires: <span class="{{ 'red' if time_left < 3 else 'yellow' if time_left < 7 else '' }}">{{ "{:.1f}".format(time_left) }}m</span>
+            &nbsp;·&nbsp; ATR: <span class="{{ 'green' if atr_min <= live_atr <= atr_max else 'red' }}">{{ "{:.2f}".format(live_atr) }}</span> <span style="color:var(--muted);font-size:.68rem;">(gate {{ atr_min|int }}–{{ atr_max|int }})</span>
         </div>
     </div>
 </div>
@@ -313,14 +314,14 @@ HTML_TEMPLATE = """
 
 <!-- Session Inference History -->
 <div class="card">
-    <div class="card-title">Session Inference History</div>
+    <div class="card-title">Session Inference History <span style="color:var(--muted);font-size:.6rem;">(last 10 sessions)</span></div>
     <table>
         <thead>
             <tr>
-                <th style="width:18%;">Time</th>
-                <th style="width:18%;">Prediction</th>
-                <th style="width:20%;">Confidence</th>
-                <th style="width:22%;">Status</th>
+                <th style="width:16%;">Time</th>
+                <th style="width:14%;">Prediction</th>
+                <th style="width:18%;">Conf / τ</th>
+                <th style="width:24%;">Status</th>
                 <th>Outcome</th>
             </tr>
         </thead>
@@ -334,17 +335,18 @@ HTML_TEMPLATE = """
                     </span>
                 </td>
                 <td>
-                    <span class="{{ 'green' if row.confidence >= ml_tau * 100 else 'red' }}">
+                    <span class="{{ 'green' if row.confidence >= row.effective_tau else 'red' }}">
                         {{ "{:.1f}".format(row.confidence) }}%
                     </span>
+                    <span style="color:var(--muted);font-size:.68rem;">&nbsp;/&nbsp;{{ "{:.1f}".format(row.effective_tau) }}%</span>
                 </td>
                 <td>
                     {% if row.status == 'success' %}
-                    <span class="green">✓ success</span>
+                    <span class="green">✓ traded</span>
                     {% elif row.status == 'tau_gate_fail' %}
-                    <span class="red">tau_gate_fail</span>
+                    <span class="red">τ gate fail</span>
                     {% else %}
-                    <span class="orange">{{ row.status }}</span>
+                    <span class="orange">filtered</span>
                     {% endif %}
                 </td>
                 <td>
@@ -355,7 +357,7 @@ HTML_TEMPLATE = """
                     {% elif row.outcome == 'pending' %}
                     <span style="color:var(--muted);">pending</span>
                     {% else %}
-                    <span style="color:var(--muted);">{{ row.outcome }}</span>
+                    <span style="color:var(--muted);">–</span>
                     {% endif %}
                 </td>
             </tr>
@@ -370,7 +372,10 @@ HTML_TEMPLATE = """
 <!-- ML Signal Card -->
 <div class="card" style="border-color:{{ '#00e676' if ml_direction == 1 else '#ff5252' if ml_direction == 0 else '#333' }};">
     <div class="card-title">ML Signal &nbsp;
-        <span style="font-size:.6rem;color:var(--muted);">two_class_model | tau={{ ml_tau }}</span>
+        <span style="font-size:.6rem;color:var(--muted);">two_class_model &nbsp;·&nbsp;
+            runtime τ=<span style="color:var(--blue);">{{ "{:.3f}".format(ml_tau) }}</span>
+            &nbsp;·&nbsp; trained τ=<span style="color:var(--muted);">{{ "{:.3f}".format(trained_tau) }}</span>
+        </span>
     </div>
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
         {% if ml_direction == 1 %}
@@ -395,7 +400,10 @@ HTML_TEMPLATE = """
                     {{ "{:+.1f}".format(moneyness_bps) }} bps
                 </span>
             </div>
-            <div class="sub">Signal age: {{ ml_signal_age }}m &nbsp;·&nbsp; Fired: {{ ml_fired_at }}</div>
+            <div class="sub">
+                Signal age: {{ ('{:.1f}m'.format(ml_signal_age)) if ml_signal_age is not none else '--' }}
+                &nbsp;·&nbsp; Fired: {{ ml_fired_at }}
+            </div>
         </div>
     </div>
     {% if ml_direction is not none and ml_confidence > 0 %}
@@ -410,10 +418,10 @@ HTML_TEMPLATE = """
 <div class="grid-2">
     <div class="card">
         <div class="card-title">Win Rate</div>
-        <div class="big-val">{{ "{:.1f}".format(win_rate) }}%</div>
+        <div class="big-val {{ 'green' if win_rate >= 55 else 'yellow' if win_rate >= 50 else 'red' }}">{{ "{:.1f}".format(win_rate) }}%</div>
         <div class="sub">{{ wins }}W / {{ losses }}L / {{ total_trades }} settled</div>
-        <div class="hbar"><div class="hbar-fill" style="width:{{ win_rate }}%;background:{{ 'var(--green)' if win_rate >= 67 else 'var(--yellow)' if win_rate >= 50 else 'var(--red)' }};"></div></div>
-        <div class="sub">Drift Monitor (Last 50): <span class="{{ 'green' if drift_win_rate >= 55 else 'orange' if drift_win_rate >= 53 else 'red' }}">{{ "{:.1f}".format(drift_win_rate) }}%</span></div>
+        <div class="hbar"><div class="hbar-fill" style="width:{{ win_rate }}%;background:{{ 'var(--green)' if win_rate >= 55 else 'var(--yellow)' if win_rate >= 50 else 'var(--red)' }};"></div></div>
+        <div class="sub" style="margin-top:4px;">Drift (last 50): <span class="{{ 'green' if drift_win_rate >= 55 else 'orange' if drift_win_rate >= 50 else 'red' }}">{{ "{:.1f}".format(drift_win_rate) }}%</span></div>
     </div>
     <div class="card">
         <div class="card-title">Trade Quality</div>
@@ -441,13 +449,15 @@ HTML_TEMPLATE = """
     </div>
     <div class="card">
         <div class="card-title">Model</div>
-        <div class="sub">
+        <div class="sub" style="line-height:2.1;">
             Trained: <span class="blue">{{ model_trained_at }}</span><br>
             Acc: <span class="blue">{{ model_dir_acc }}%</span>
             &nbsp;·&nbsp; Win rate: <span class="blue">{{ model_win_rate }}%</span>
-            &nbsp;·&nbsp; Coverage: <span class="blue">{{ model_coverage }}%</span><br>
-            Tau: <span class="blue">{{ model_tau }}</span>
-            &nbsp;·&nbsp; Next retrain: <span style="color:var(--yellow);">{{ next_retrain }}</span>
+            &nbsp;·&nbsp; Coverage: <span class="{{ 'red' if model_atr_filtered else 'blue' }}">{{ model_coverage }}%</span>
+            {% if model_atr_filtered %}<span style="color:var(--red);font-size:.65rem;"> ⚠ ATR-filtered</span>{% endif %}<br>
+            Trained τ: <span class="blue">{{ model_tau }}</span>
+            &nbsp;·&nbsp; Runtime τ: <span class="green">{{ "{:.3f}".format(ml_tau) }}</span><br>
+            Next retrain: <span style="color:var(--yellow);">{{ next_retrain }}</span>
         </div>
     </div>
 </div>
@@ -520,6 +530,7 @@ HTML_TEMPLATE = """
             Yes bid: <span class="green">{{ yes_bid }}¢</span> ask: {{ yes_ask }}¢ &nbsp;·&nbsp; Liq: {{ yes_liq }}<br>
             No bid: <span class="red">{{ no_bid }}¢</span> ask: {{ no_ask }}¢ &nbsp;·&nbsp; Liq: {{ no_liq }}<br>
             OBI: <span class="{{ 'green' if obi > 0.2 else 'red' if obi < -0.2 else '' }}">{{ "{:+.3f}".format(obi) }}</span>
+            <span style="color:var(--muted);font-size:.68rem;">&nbsp;({{ 'YES-heavy' if obi > 0.05 else 'NO-heavy' if obi < -0.05 else 'balanced' }})</span>
         </div>
     </div>
     <div class="card">
@@ -594,6 +605,12 @@ const allData       = {{ chart_data | tojson }};
 const allTimestamps = {{ chart_timestamps | tojson }};
 const ctx = document.getElementById('pnlChart').getContext('2d');
 let chart;
+let activeChartHours = 0;  // 0 = ALL
+
+// ── Restore persisted filter selections ───────────────────────────────────────
+const _savedChart  = localStorage.getItem('edgebot_chart_window') || '0';
+const _savedStats  = localStorage.getItem('edgebot_stats_window') || 'all';
+activeChartHours   = parseInt(_savedChart);
 
 function getGradient(cx, chartArea, scales) {
     if (!chartArea || !scales || !scales.y) return '#00e676';
@@ -607,32 +624,42 @@ function getGradient(cx, chartArea, scales) {
     return g;
 }
 
-function buildChart(labels, data) {
+function buildChart(labels, data, tradeIndices) {
     if (chart) chart.destroy();
+    // Overlay dataset: dots at each trade point
+    const tradePoints = data.map((v,i) => tradeIndices.includes(i) ? v : null);
     chart = new Chart(ctx, {
         type: 'line',
-        data: { labels, datasets: [{ data, borderWidth: 2,
-            pointRadius: data.length < 30 ? 3 : 0, pointHoverRadius: 4,
-            fill: { target: 'origin', above: 'rgba(0,230,118,.07)', below: 'rgba(255,82,82,.07)' },
-            tension: 0.4 }]},
+        data: { labels, datasets: [
+            { data, borderWidth: 2,
+              pointRadius: 0, pointHoverRadius: 4,
+              fill: { target: 'origin', above: 'rgba(0,230,118,.07)', below: 'rgba(255,82,82,.07)' },
+              tension: 0.3 },
+            { data: tradePoints, borderWidth: 0,
+              pointRadius: 5, pointHoverRadius: 6,
+              pointStyle: 'circle',
+              pointBackgroundColor: tradePoints.map(v => v === null ? 'transparent' : (v >= 0 ? '#00e676' : '#ff5252')),
+              pointBorderColor: '#000',
+              pointBorderWidth: 1,
+              showLine: false, fill: false }
+        ]},
         options: {
             responsive: true, maintainAspectRatio: false, animation: false,
             interaction: { intersect: false, mode: 'index' },
             scales: {
-                x: { ticks: { color: '#444', maxTicksLimit: 5, font: { size: 10 } }, grid: { color: '#1a1a1a' } },
+                x: { ticks: { color: '#444', maxTicksLimit: 6, font: { size: 10 } }, grid: { color: '#1a1a1a' } },
                 y: { ticks: { color: '#444', font: { size: 10 }, callback: v => '$'+v.toFixed(4) }, grid: { color: '#1a1a1a' } }
             },
             plugins: { legend: { display: false },
                 tooltip: { backgroundColor: '#1a1a1a', titleColor: '#888', bodyColor: '#fff',
                            borderColor: '#333', borderWidth: 1,
-                           callbacks: { label: c => ' $'+c.parsed.y.toFixed(4) } } }
+                           callbacks: { label: c => c.datasetIndex === 0 ? ' $'+c.parsed.y.toFixed(4) : '' } } }
         },
         plugins: [{ id: 'dynColor', afterLayout: c => {
             const { ctx: cx, chartArea, scales } = c;
             if (!chartArea) return;
             const g = getGradient(cx, chartArea, scales);
             c.data.datasets[0].borderColor = g;
-            c.data.datasets[0].pointBackgroundColor = g;
         }}]
     });
 }
@@ -640,46 +667,100 @@ function buildChart(labels, data) {
 function filterChart(hours, btn) {
     document.querySelectorAll('.btn-t').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    if (hours === 0 || allTimestamps.length === 0) { buildChart(allLabels, allData); return; }
-    const cutoff = Date.now() - hours * 3600000;
+    activeChartHours = hours;
+    localStorage.setItem('edgebot_chart_window', hours);
+    applyChartFilter();
+}
+
+function applyChartFilter() {
+    if (activeChartHours === 0 || allTimestamps.length === 0) {
+        const tradeIdx = allData.map((v,i) => i > 0 ? i : -1).filter(i => i >= 0);
+        buildChart(allLabels, allData, tradeIdx);
+        return;
+    }
+    const cutoff = Date.now() - activeChartHours * 3600000;
     const idx = allTimestamps.map((ts,i) => new Date(ts).getTime() >= cutoff ? i : -1).filter(i => i >= 0);
-    buildChart(idx.map(i => allLabels[i]), idx.map(i => allData[i]));
+    const filteredData   = idx.map(i => allData[i]);
+    const tradeIdx = filteredData.map((v,i) => i > 0 ? i : -1).filter(i => i >= 0);
+    buildChart(idx.map(i => allLabels[i]), filteredData, tradeIdx);
 }
 
 function switchWindow(w, btn) {
     document.querySelectorAll('.t-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
+    localStorage.setItem('edgebot_stats_window', w);
     ['all','24h','7d'].forEach(id => {
         document.getElementById('stats-'+id).style.display = id === w ? '' : 'none';
     });
 }
 
-buildChart(allLabels, allData);
+// ── Apply persisted state on load ─────────────────────────────────────────────
+(function applyPersistedState() {
+    // Chart time window
+    const chartBtns = document.querySelectorAll('.btn-t');
+    const hoursMap = {'0':0,'1':1,'6':6,'24':24};
+    chartBtns.forEach(b => {
+        const h = hoursMap[_savedChart];
+        const label = b.textContent.trim();
+        if ((_savedChart === '0' && label === 'ALL') ||
+            (_savedChart === '1' && label === '1H') ||
+            (_savedChart === '6' && label === '6H') ||
+            (_savedChart === '24' && label === '24H')) {
+            b.classList.add('active');
+        } else {
+            b.classList.remove('active');
+        }
+    });
+    // Stats window
+    ['all','24h','7d'].forEach(id => {
+        document.getElementById('stats-'+id).style.display = id === _savedStats ? '' : 'none';
+    });
+    document.querySelectorAll('.t-btn').forEach(b => {
+        b.classList.toggle('active', b.textContent.trim().toLowerCase() === _savedStats ||
+                                     (b.textContent.trim() === 'All' && _savedStats === 'all'));
+    });
+    applyChartFilter();
+})();
 
-// Pause / resume auto-refresh
+// ── Countdown timer ───────────────────────────────────────────────────────────
+let countdownVal = 10;
+let countdownInterval = null;
+
+function startCountdown() {
+    countdownVal = 10;
+    const el = document.getElementById('countdown');
+    if (el) el.textContent = countdownVal;
+    countdownInterval = setInterval(() => {
+        countdownVal--;
+        const el = document.getElementById('countdown');
+        if (el) el.textContent = Math.max(0, countdownVal);
+    }, 1000);
+}
+startCountdown();
+
+// ── Pause / resume auto-refresh ───────────────────────────────────────────────
 let paused = false;
 let pauseTimer = null;
 
 function togglePause() {
     paused = !paused;
-    const btn = document.getElementById('pauseBtn');
+    const btn    = document.getElementById('pauseBtn');
     const status = document.getElementById('refresh-status');
-    const meta = document.getElementById('refresh-meta');
+    const meta   = document.getElementById('refresh-meta');
     if (paused) {
         btn.textContent = '▶ Resume';
         btn.classList.add('paused');
-        status.textContent = 'paused';
-        status.style.color = 'var(--yellow)';
+        status.innerHTML = '<span style="color:var(--yellow);">paused</span>';
         meta.removeAttribute('content');
-        // Auto-resume after 5 minutes so dashboard never gets permanently stuck
+        if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
         pauseTimer = setTimeout(() => { if (paused) togglePause(); }, 300000);
     } else {
         btn.textContent = '⏸ Pause';
         btn.classList.remove('paused');
-        status.textContent = 'refresh 10s';
-        status.style.color = '#333';
+        status.innerHTML = '↻ <span id="countdown">10</span>s';
         meta.setAttribute('content', '10');
         if (pauseTimer) { clearTimeout(pauseTimer); pauseTimer = null; }
+        startCountdown();
         location.reload();
     }
 }
@@ -710,10 +791,12 @@ def fetch_live_balance() -> tuple:
     return 0.0, False
 
 
+_CONFIG_PATH = Path(__file__).resolve().parent / "config.json"
+
 def load_config() -> dict:
     try:
-        if os.path.exists("config.json"):
-            with open("config.json") as f:
+        if _CONFIG_PATH.exists():
+            with open(_CONFIG_PATH) as f:
                 return json.load(f)
     except Exception:
         pass
@@ -854,17 +937,20 @@ def _model_info() -> dict:
         except Exception:
             pass
 
+        model_coverage = round(metrics.get("coverage", 0) * 100, 2)
         return {
             "model_trained_at":  trained_str,
             "model_dir_acc":     round(metrics.get("direction_accuracy", 0) * 100, 1),
             "model_win_rate":    round(metrics.get("win_rate", 0) * 100, 1),
-            "model_coverage":    round(metrics.get("coverage", 0) * 100, 2),
+            "model_coverage":    model_coverage,
+            "model_atr_filtered": model_coverage == 0.0 and metrics.get("n_total", 0) > 0,
             "model_tau":         live_tau,
             "next_retrain":      next_retrain,
         }
     except Exception:
         return {"model_trained_at": "--", "model_dir_acc": 0.0, "model_win_rate": 0.0,
-                "model_coverage": 0.0, "model_tau": "--", "next_retrain": "--"}
+                "model_coverage": 0.0, "model_atr_filtered": False,
+                "model_tau": "--", "next_retrain": "--"}
 
 
 def get_data():
@@ -931,19 +1017,20 @@ def get_data():
         settled = pd.concat([settled, paper_stop_exits], ignore_index=True)
         settled = settled.sort_values("timestamp").reset_index(drop=True)
 
-        # ── Concept drift: rolling 50-trade win rate ───────────────────────────────
-        recent_50 = settled.tail(50)
-        if len(recent_50) > 0:
-            drift_win_rate = len(recent_50[recent_50["event"] == "PAYOUT"]) / len(recent_50) * 100
-        else:
-            drift_win_rate = 0.0
-
         if "pnl_this_trade" in settled.columns and not settled.empty:
             settled["pnl_float"] = settled["pnl_this_trade"].apply(safe_float)
             settled["cum_pnl"]   = settled["pnl_float"].cumsum()
         else:
             settled["pnl_float"] = 0.0
             settled["cum_pnl"]   = 0.0
+
+        # ── Concept drift: rolling 50-trade win rate ───────────────────────────────
+        # Must run after pnl_float is added above.
+        recent_50 = settled.tail(50)
+        if len(recent_50) > 0 and "pnl_float" in settled.columns:
+            drift_win_rate = (recent_50["pnl_float"] > 0).sum() / len(recent_50) * 100
+        else:
+            drift_win_rate = 0.0
 
         # ── Reconciled PnL — prefer Kalshi-verified amounts over estimates ─────────
         # RECONCILE rows carry the actual PnL pulled from Kalshi after settlement.
@@ -989,7 +1076,9 @@ def get_data():
 
         # ── PnL chart — anchor start to bot's first log entry ─────────────────────
         first_ts         = df["timestamp"].iloc[0]
-        chart_labels     = settled["timestamp"].dt.tz_convert(central).dt.strftime("%H:%M").tolist()
+        _time_span   = (settled["timestamp"].max() - settled["timestamp"].min()).total_seconds() if not settled.empty else 0
+        _label_fmt   = "%m/%d %H:%M" if _time_span > 86400 else "%H:%M"
+        chart_labels = settled["timestamp"].dt.tz_convert(central).dt.strftime(_label_fmt).tolist()
         chart_data       = settled["cum_pnl"].round(6).tolist()
         chart_timestamps = settled["timestamp"].dt.strftime("%Y-%m-%dT%H:%M:%SZ").tolist()
         chart_labels     = [first_ts.astimezone(central).strftime("%H:%M")] + chart_labels
@@ -1105,29 +1194,34 @@ def get_data():
             ml_direction = None
         ml_confidence = safe_float(last.get("ml_confidence", 0.0))
         ml_proba_up   = safe_float(last.get("ml_proba_up", 0.0))
-        ml_birth_ts   = safe_float(last.get("ml_birth_ts", 0))
-        ml_signal_age = round((time.time() - ml_birth_ts) / 60.0, 1) if ml_birth_ts > 0 else 999.0
+        ml_birth_ts_raw = safe_float(last.get("ml_birth_ts", 0))
+        # Guard against column misalignment: ml_birth_ts must be a plausible Unix timestamp
+        # (between 2001 and 2040). Signal age minutes would be tiny (<1000) or zero.
+        ml_birth_ts = ml_birth_ts_raw if 1_000_000_000 < ml_birth_ts_raw < 2_000_000_000 else 0.0
+        ml_signal_age = round((time.time() - ml_birth_ts) / 60.0, 1) if ml_birth_ts > 0 else None
         ml_fired_at   = (
             pd.Timestamp(ml_birth_ts, unit="s", tz="UTC")
             .astimezone(pytz.timezone("US/Central"))
             .strftime("%H:%M:%S") if ml_birth_ts > 0 else "--"
         )
 
-        # Load tau — prefer decision_threshold.json (grid-search result), fall back to config
+        # Runtime tau: what the bot is actually using right now (config.json is authoritative)
         _dt_path = _ARTIFACTS_DIR / "decision_threshold.json"
         ml_tau = safe_float(cfg.get("ML_CONFIDENCE_TAU", 0.50))
+        # Trained tau: what the last grid-search produced (shown separately in Model card)
+        trained_tau = ml_tau
         try:
             if _dt_path.exists():
                 with open(_dt_path) as _dtf:
-                    ml_tau = float(json.load(_dtf)["confidence_tau"])
+                    trained_tau = float(json.load(_dtf)["confidence_tau"])
         except Exception:
             pass
 
         atr_min = safe_float(cfg.get("ATR_MIN", 15.0))
         atr_max = safe_float(cfg.get("ATR_MAX", 30.0))
 
-        birth_ts   = ml_birth_ts  # keep for any legacy references
-        signal_age = ml_signal_age
+        birth_ts   = ml_birth_ts
+        signal_age = ml_signal_age  # None when no signal has fired
 
         _ticker_rows = df[df["ticker"].notna() & (df["ticker"] != "")] if not df.empty else pd.DataFrame()
         lm        = _ticker_rows.iloc[-1] if not _ticker_rows.empty else last
@@ -1167,14 +1261,15 @@ def get_data():
         has_active_position = pd.notna(last_opened_ts) and (pd.isna(last_closed_ts) or last_opened_ts > last_closed_ts)
         has_active_order    = (not has_active_position) and pd.notna(last_resting_ts) and (pd.isna(last_closed_ts) or last_resting_ts > last_closed_ts)
 
-        hrtbt_rows = df[df["event"] == "HRTBT"].tail(1)
         stop_trail = stop_best_bid = stop_active = stop_level = 0
-        if not hrtbt_rows.empty:
-            lh            = hrtbt_rows.iloc[0]
-            stop_trail    = safe_int(lh.get("stop_trail", 0))
-            stop_best_bid = safe_int(lh.get("stop_best_bid", 0))
-            stop_active   = bool(safe_int(lh.get("stop_active", 0)))
-            stop_level    = max(stop_best_bid - stop_trail, safe_int(cfg.get("STOP_FLOOR_CENTS", 15)))
+        if "stop_trail" in df.columns:
+            _stop_src = df[df["stop_trail"].apply(safe_int) > 0]
+            if not _stop_src.empty:
+                lh            = _stop_src.iloc[-1]
+                stop_trail    = safe_int(lh.get("stop_trail", 0))
+                stop_best_bid = safe_int(lh.get("stop_best_bid", 0))
+                stop_active   = bool(safe_int(lh.get("stop_active", 0)))
+                stop_level    = max(stop_best_bid - stop_trail, safe_int(cfg.get("STOP_FLOOR_CENTS", 15)))
 
         pos_ticker = pos_side = pos_entry = pos_qty = pos_fill_price = pos_fill_qty = pos_cost = pos_fees = ""
         if has_active_position and not fill_rows.empty:
@@ -1211,14 +1306,18 @@ def get_data():
         for _, r in log_df.iterrows():
             ev  = str(r.get("event", ""))
             msg = str(r.get("msg", ""))
+            # SETTLE_VERIFIED rows omit stop_active, shifting columns left by one;
+            # the settlement text lands in reconcile_delta instead of msg.
+            if ev == "SETTLE_VERIFIED" and msg in ("nan", "", "None"):
+                msg = str(r.get("reconcile_delta", ""))
 
             # For SETTLE_VERIFIED, derive a clean label and color from the msg content
             # so sessions with no position still show a clear YES/NO outcome.
             if ev == "SETTLE_VERIFIED":
-                if "Settled: YES" in msg:
+                if "Market settled YES" in msg:
                     display_event = "SETTLED YES"
                     color         = "#00e676"   # green — would have won
-                elif "Settled: NO" in msg:
+                elif "Market settled NO" in msg:
                     display_event = "SETTLED NO"
                     color         = "#ff5252"   # red — would have lost
                 else:
@@ -1237,7 +1336,7 @@ def get_data():
             })
 
         # ── Latest ML inferences ───────────────────────────────────────────────
-        infer_rows   = df[df["event"] == "ML_INFERENCE"].tail(50)
+        infer_rows   = df[df["event"] == "ML_INFERENCE"].tail(10)
         fill_events  = df[df["event"].isin(["FILL_CONFIRMED", "PAPER_BUY"])]
 
         settle_events = df[df["event"] == "SETTLE_VERIFIED"]
@@ -1263,9 +1362,10 @@ def get_data():
             dir_str = "UP" if idir == 1 else "DN" if idir == 0 else "--"
 
             # Use the tau that was active at inference time (logged as ml_tau column).
-            # Fall back to the current live ml_tau only for legacy rows that predate this column.
+            # Guard: valid tau must be in (0, 1]. Values outside that range mean the column
+            # was misaligned (e.g. a Unix timestamp or signal_age_min landed there).
             row_tau = safe_float(ir.get("ml_tau", 0.0))
-            effective_tau = row_tau if row_tau > 0 else ml_tau
+            effective_tau = row_tau if 0 < row_tau <= 1.0 else ml_tau
             if iconf < effective_tau:
                 status = "tau_gate_fail"
             else:
@@ -1288,11 +1388,12 @@ def get_data():
                 outcome = "wrong"
 
             inference_history.append({
-                "time":       ir["timestamp"].astimezone(central).strftime("%H:%M:%S"),
-                "direction":  dir_str,
-                "confidence": round(iconf * 100, 1),
-                "status":     status,
-                "outcome":    outcome,
+                "time":          ir["timestamp"].astimezone(central).strftime("%H:%M:%S"),
+                "direction":     dir_str,
+                "confidence":    round(iconf * 100, 1),
+                "effective_tau": round(effective_tau * 100, 1),
+                "status":        status,
+                "outcome":       outcome,
             })
 
         config_sections = build_config_sections(cfg)
@@ -1317,6 +1418,7 @@ def get_data():
             ml_signal_age=ml_signal_age,
             ml_fired_at=ml_fired_at,
             ml_tau=ml_tau,
+            trained_tau=trained_tau,
             atr_min=atr_min,
             atr_max=atr_max,
             live_atr=round(live_atr, 2),

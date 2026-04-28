@@ -860,6 +860,7 @@ class StrategyController:
             round(bank, 2), round(self.risk.rolling_24h_loss(), 2),
             ctx.get("ml_direction", ""), round(ctx.get("ml_confidence", 0.0), 4),
             round(ctx.get("ml_proba_up", 0.0), 4),
+            round(ctx.get("ml_tau", 0.0), 6),
             ctx.get("ml_birth_ts", 0), round(ctx.get("signal_age_min", 0.0), 2),
             ob_stale, ob_last_delta_age, ws_connected,
             ctx.get("filter_reason", ""),

@@ -165,3 +165,13 @@ Opens a Flask UI for monitoring trades, P&L, and signal activity.
 | `kalshi.key` | Kalshi RSA private key (never commit) |
 
 python3 ml/train.py --confidence_tau 0.60 --atr_min 15.0 --atr_max 30.0
+
+python3 ml/train.py --confidence_tau 0.60 --atr_min 0 --atr_max 100 --calibrate_probabilities
+
+python3 ml/train.py --calibrate_probabilities --optimize_threshold_for_profit --atr_min 0 --atr_max 100
+
+python3 ml/train.py --calibrate_probabilities --optimize_threshold_for_profit --optimize_tau_by ev --atr_min 0 --atr_max 100
+
+python3 ml/train.py --optimize_threshold_for_profit --optimize_tau_by ev --atr_min 0 --atr_max 100
+
+python3 ml/train.py --atr_min 0 --atr_max 100 --confidence_tau 0.55 

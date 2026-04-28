@@ -2454,3 +2454,778 @@
 2026-04-27 10:05:15,189 - __main__ - INFO -   Win Rate: 57.9%
 2026-04-27 10:05:15,190 - __main__ - INFO - ================================================================================
 2026-04-27 10:05:15,190 - __main__ - INFO - Wrote /Users/ryanruehl/Desktop/ML Bot/artifacts/model_updated.flag — bot will hot-reload within 5 min
+2026-04-27 10:56:57,405 - __main__ - INFO - Logging to /Users/ryanruehl/Desktop/ML Bot/artifacts/logs.txt
+2026-04-27 10:56:57,406 - __main__ - INFO - Random seed set to 42
+2026-04-27 10:56:57,407 - __main__ - INFO - Starting centralized training pipeline
+2026-04-27 10:56:57,407 - __main__ - INFO - TWO-CLASS MODE ENABLED: Training binary direction classifier only
+2026-04-27 10:56:57,407 - __main__ - INFO - ============================================================
+2026-04-27 10:56:57,407 - __main__ - INFO - LOADING AND PREPARING DATA
+2026-04-27 10:56:57,407 - __main__ - INFO - ============================================================
+2026-04-27 10:56:57,408 - __main__ - INFO - Loading data from /Users/ryanruehl/Desktop/ML Bot/data/processed/btc_1min_processed.parquet
+2026-04-27 10:56:57,791 - __main__ - INFO - Loaded dataset: 31,433 rows, 366 columns
+2026-04-27 10:56:57,795 - __main__ - INFO - Symbols: 1
+2026-04-27 10:56:57,807 - __main__ - INFO - Date range: 2026-04-05 18:52:00+00:00 to 2026-04-27 14:59:00+00:00
+2026-04-27 10:56:57,929 - __main__ - INFO - Computed ATR_14 for 1 symbols (1 NaN rows, typically the first candle per symbol)
+2026-04-27 10:56:57,939 - __main__ - INFO - Creating classification targets: horizon=15min, deadband=3.0bps
+2026-04-27 10:56:57,986 - __main__ - INFO - Input memory usage: 92.2 MB
+2026-04-27 10:56:57,998 - __main__ - INFO - Data sorted by symbol and timestamp
+2026-04-27 10:56:58,004 - __main__ - INFO - Valid samples: 31,418 / 31,433 (100.0%)
+2026-04-27 10:56:58,481 - __main__ - INFO - Classification target distribution:
+2026-04-27 10:56:58,481 - __main__ - INFO -   Down: 12,686 (40.4%)
+2026-04-27 10:56:58,482 - __main__ - INFO -   Up: 13,416 (42.7%)
+2026-04-27 10:56:58,482 - __main__ - INFO -   No-trade: 5,316 (16.9%)
+2026-04-27 10:56:58,482 - __main__ - INFO - Binary target distribution (trade vs no-trade):
+2026-04-27 10:56:58,482 - __main__ - INFO -   No-trade: 5,316 (16.9%)
+2026-04-27 10:56:58,482 - __main__ - INFO -   Trade: 26,102 (83.1%)
+2026-04-27 10:56:58,483 - __main__ - INFO - Direction distribution (trade samples only):
+2026-04-27 10:56:58,483 - __main__ - INFO -   Down: 12,686 (48.6%)
+2026-04-27 10:56:58,484 - __main__ - INFO -   Up: 13,416 (51.4%)
+2026-04-27 10:56:58,506 - __main__ - INFO - Output memory usage: 92.8 MB
+2026-04-27 10:56:58,508 - __main__ - INFO - Class distribution (two_class mode):
+2026-04-27 10:56:58,508 - __main__ - INFO -   Down: 12,686 (48.6%)
+2026-04-27 10:56:58,509 - __main__ - INFO -   Up: 13,416 (51.4%)
+2026-04-27 10:56:58,509 - __main__ - INFO - Creating symbol-wise temporal splits: train=70.0%, val=15.0%, test=15.0%
+2026-04-27 10:56:58,517 - __main__ - INFO - Symbol-wise temporal split statistics:
+2026-04-27 10:56:58,543 - __main__ - INFO -   Train: 21,992 samples, 1 symbols, 65.0 MB
+2026-04-27 10:56:58,544 - __main__ - INFO -     Date range: 2026-04-05 18:52:00+00:00 to 2026-04-21 01:25:00+00:00
+2026-04-27 10:56:58,568 - __main__ - INFO -   Validation: 4,712 samples, 1 symbols, 13.9 MB
+2026-04-27 10:56:58,569 - __main__ - INFO -     Date range: 2026-04-21 01:26:00+00:00 to 2026-04-24 07:58:00+00:00
+2026-04-27 10:56:58,592 - __main__ - INFO -   Test: 4,714 samples, 1 symbols, 13.9 MB
+2026-04-27 10:56:58,593 - __main__ - INFO -     Date range: 2026-04-24 07:59:00+00:00 to 2026-04-27 14:44:00+00:00
+2026-04-27 10:56:58,593 - __main__ - INFO - Filtering for trade-only samples (two-class mode)
+2026-04-27 10:56:58,649 - __main__ - INFO - Trade-only filtering results:
+2026-04-27 10:56:58,649 - __main__ - INFO -   Train: 21,992 -> 18,692 (85.0%)
+2026-04-27 10:56:58,650 - __main__ - INFO -   Val: 4,712 -> 4,033 (85.6%)
+2026-04-27 10:56:58,651 - __main__ - INFO -   Test: 4,714 -> 3,377 (71.6%)
+2026-04-27 10:56:58,652 - __main__ - INFO - ============================================================
+2026-04-27 10:56:58,652 - __main__ - INFO - FEATURE PROCESSING
+2026-04-27 10:56:58,652 - __main__ - INFO - ============================================================
+2026-04-27 10:56:59,675 - __main__ - INFO - Selecting top 128 features using mutual_info
+2026-04-27 10:57:30,373 - __main__ - INFO - mutual_info selection done in 30.7s on sample 18,692 rows, picked 128 features
+2026-04-27 10:57:30,374 - __main__ - INFO - Selected 128 features
+2026-04-27 10:57:30,374 - __main__ - INFO -   price: 109 features
+2026-04-27 10:57:30,374 - __main__ - INFO -   returns: 2 features
+2026-04-27 10:57:30,374 - __main__ - INFO -   spread: 5 features
+2026-04-27 10:57:30,374 - __main__ - INFO -   imbalance: 33 features
+2026-04-27 10:57:30,374 - __main__ - INFO -   technical: 9 features
+2026-04-27 10:57:30,374 - __main__ - INFO -   other: 6 features
+2026-04-27 10:57:30,454 - __main__ - INFO - Feature matrix shapes:
+2026-04-27 10:57:30,454 - __main__ - INFO -   Train: (18692, 128)
+2026-04-27 10:57:30,455 - __main__ - INFO -   Val: (4033, 128)
+2026-04-27 10:57:30,455 - __main__ - INFO -   Test: (3377, 128)
+2026-04-27 10:57:30,455 - __main__ - INFO - Fitting preprocessors on training data
+2026-04-27 10:57:30,456 - __main__ - INFO - Using imputer strategy: mean
+2026-04-27 10:57:30,536 - __main__ - INFO - Fitting StandardScaler
+2026-04-27 10:57:30,565 - __main__ - INFO - Scaler fitted: center range [-0.072, 73053.138]
+2026-04-27 10:57:30,565 - __main__ - INFO - Scale range: [0.000, 2455.115]
+2026-04-27 10:57:30,672 - __main__ - INFO - Saved preprocessors to /Users/ryanruehl/Desktop/ML Bot/artifacts
+2026-04-27 10:57:30,673 - __main__ - INFO - Final feature shapes: Train (18692, 128), Val (4033, 128), Test (3377, 128)
+2026-04-27 10:57:30,673 - __main__ - INFO - Target mode: direction (0/1)
+2026-04-27 10:57:30,676 - __main__ - INFO - ============================================================
+2026-04-27 10:57:30,676 - __main__ - INFO - MODEL TRAINING
+2026-04-27 10:57:30,676 - __main__ - INFO - ============================================================
+2026-04-27 10:57:30,676 - __main__ - INFO - Training MLP model with architecture: [256, 128, 64]
+2026-04-27 10:57:30,687 - __main__ - INFO - Using two-class mode: binary direction classifier (Up vs Down)
+2026-04-27 10:57:30,688 - __main__ - INFO - Direction distribution: Down=9070, Up=9622
+2026-04-27 10:57:30,688 - __main__ - INFO - Class balance: 0.515 Up ratio
+2026-04-27 10:57:30,692 - __main__ - INFO - Sample weights: mean=1.0000, std=0.0295
+2026-04-27 10:57:32,335 - __main__ - INFO - Training two-class MLP for 30 epochs...
+2026-04-27 10:57:33,470 - __main__ - INFO - Epoch 1/30: Train Loss=0.6902, Acc=0.5332 | Val Loss=0.6942, Acc=0.5259 || [2-class] cov=0.003, dirAcc=0.750, profit=7.5bps, win=0.750, conf=0.739
+2026-04-27 10:57:34,881 - __main__ - INFO - Epoch 2/30: Train Loss=0.6840, Acc=0.5533 | Val Loss=0.6947, Acc=0.5274 || [2-class] cov=0.004, dirAcc=0.667, profit=5.8bps, win=0.667, conf=0.743
+2026-04-27 10:57:36,328 - __main__ - INFO - Epoch 3/30: Train Loss=0.6785, Acc=0.5674 | Val Loss=0.6968, Acc=0.5242 || [2-class] cov=0.008, dirAcc=0.645, profit=6.0bps, win=0.645, conf=0.734
+2026-04-27 10:57:38,256 - __main__ - INFO - Epoch 4/30: Train Loss=0.6729, Acc=0.5792 | Val Loss=0.6995, Acc=0.5207 || [2-class] cov=0.017, dirAcc=0.618, profit=4.5bps, win=0.618, conf=0.731
+2026-04-27 10:57:40,375 - __main__ - INFO - Epoch 5/30: Train Loss=0.6677, Acc=0.5862 | Val Loss=0.7072, Acc=0.5115 || [2-class] cov=0.047, dirAcc=0.640, profit=4.3bps, win=0.640, conf=0.729
+2026-04-27 10:57:42,809 - __main__ - INFO - Epoch 6/30: Train Loss=0.6610, Acc=0.5993 | Val Loss=0.7111, Acc=0.5120 || [2-class] cov=0.082, dirAcc=0.630, profit=4.1bps, win=0.630, conf=0.731
+2026-04-27 10:57:45,743 - __main__ - INFO - Epoch 7/30: Train Loss=0.6531, Acc=0.6151 | Val Loss=0.7153, Acc=0.5113 || [2-class] cov=0.123, dirAcc=0.574, profit=2.0bps, win=0.574, conf=0.735
+2026-04-27 10:57:48,802 - __main__ - INFO - Epoch 8/30: Train Loss=0.6436, Acc=0.6294 | Val Loss=0.7243, Acc=0.5148 || [2-class] cov=0.193, dirAcc=0.573, profit=1.9bps, win=0.573, conf=0.742
+2026-04-27 10:57:52,185 - __main__ - INFO - Epoch 9/30: Train Loss=0.6311, Acc=0.6457 | Val Loss=0.7283, Acc=0.5170 || [2-class] cov=0.235, dirAcc=0.557, profit=1.3bps, win=0.557, conf=0.750
+2026-04-27 10:57:55,988 - __main__ - INFO - Epoch 10/30: Train Loss=0.6152, Acc=0.6647 | Val Loss=0.7438, Acc=0.5177 || [2-class] cov=0.317, dirAcc=0.549, profit=0.9bps, win=0.549, conf=0.762
+2026-04-27 10:57:59,974 - __main__ - INFO - Epoch 11/30: Train Loss=0.5942, Acc=0.6904 | Val Loss=0.7840, Acc=0.5140 || [2-class] cov=0.449, dirAcc=0.534, profit=0.7bps, win=0.534, conf=0.785
+2026-04-27 10:57:59,974 - __main__ - INFO - Early stopping at epoch 11 (patience=10)
+2026-04-27 10:57:59,983 - __main__ - INFO - Loaded best model from early stopping
+2026-04-27 10:57:59,984 - __main__ - INFO - Two-class MLP finished: iters=11, final_loss=0.5942
+2026-04-27 10:58:00,256 - __main__ - INFO - Saved sklearn MLP loss curve: sk_mlp_loss_curve.csv, sk_mlp_loss_curve.png
+2026-04-27 10:58:00,260 - __main__ - INFO - Saved per-epoch metrics to epoch_metrics_two_class.csv
+2026-04-27 10:58:00,260 - __main__ - INFO - Calibrating two-class probabilities using isotonic method
+2026-04-27 10:58:00,261 - __main__ - INFO - Calibrating two-class probabilities using isotonic method
+2026-04-27 10:58:00,262 - __main__ - ERROR - Training failed: The 'cv' parameter of CalibratedClassifierCV must be an int in the range [2, inf), an object implementing 'split' and 'get_n_splits', an iterable or None. Got 'prefit' instead.
+2026-04-27 10:58:00,263 - __main__ - ERROR - Check logs for detailed error information
+2026-04-27 10:59:47,202 - __main__ - INFO - Logging to /Users/ryanruehl/Desktop/ML Bot/artifacts/logs.txt
+2026-04-27 10:59:47,202 - __main__ - INFO - Random seed set to 42
+2026-04-27 10:59:47,202 - __main__ - INFO - Starting centralized training pipeline
+2026-04-27 10:59:47,202 - __main__ - INFO - TWO-CLASS MODE ENABLED: Training binary direction classifier only
+2026-04-27 10:59:47,202 - __main__ - INFO - ============================================================
+2026-04-27 10:59:47,202 - __main__ - INFO - LOADING AND PREPARING DATA
+2026-04-27 10:59:47,202 - __main__ - INFO - ============================================================
+2026-04-27 10:59:47,203 - __main__ - INFO - Loading data from /Users/ryanruehl/Desktop/ML Bot/data/processed/btc_1min_processed.parquet
+2026-04-27 10:59:47,648 - __main__ - INFO - Loaded dataset: 31,433 rows, 366 columns
+2026-04-27 10:59:47,650 - __main__ - INFO - Symbols: 1
+2026-04-27 10:59:47,651 - __main__ - INFO - Date range: 2026-04-05 18:52:00+00:00 to 2026-04-27 14:59:00+00:00
+2026-04-27 10:59:47,777 - __main__ - INFO - Computed ATR_14 for 1 symbols (1 NaN rows, typically the first candle per symbol)
+2026-04-27 10:59:47,786 - __main__ - INFO - Creating classification targets: horizon=15min, deadband=3.0bps
+2026-04-27 10:59:47,807 - __main__ - INFO - Input memory usage: 92.2 MB
+2026-04-27 10:59:47,814 - __main__ - INFO - Data sorted by symbol and timestamp
+2026-04-27 10:59:47,817 - __main__ - INFO - Valid samples: 31,418 / 31,433 (100.0%)
+2026-04-27 10:59:48,701 - __main__ - INFO - Classification target distribution:
+2026-04-27 10:59:48,702 - __main__ - INFO -   Down: 12,686 (40.4%)
+2026-04-27 10:59:48,702 - __main__ - INFO -   Up: 13,416 (42.7%)
+2026-04-27 10:59:48,702 - __main__ - INFO -   No-trade: 5,316 (16.9%)
+2026-04-27 10:59:48,703 - __main__ - INFO - Binary target distribution (trade vs no-trade):
+2026-04-27 10:59:48,703 - __main__ - INFO -   No-trade: 5,316 (16.9%)
+2026-04-27 10:59:48,703 - __main__ - INFO -   Trade: 26,102 (83.1%)
+2026-04-27 10:59:48,703 - __main__ - INFO - Direction distribution (trade samples only):
+2026-04-27 10:59:48,703 - __main__ - INFO -   Down: 12,686 (48.6%)
+2026-04-27 10:59:48,703 - __main__ - INFO -   Up: 13,416 (51.4%)
+2026-04-27 10:59:48,725 - __main__ - INFO - Output memory usage: 92.8 MB
+2026-04-27 10:59:48,728 - __main__ - INFO - Class distribution (two_class mode):
+2026-04-27 10:59:48,729 - __main__ - INFO -   Down: 12,686 (48.6%)
+2026-04-27 10:59:48,729 - __main__ - INFO -   Up: 13,416 (51.4%)
+2026-04-27 10:59:48,730 - __main__ - INFO - Creating symbol-wise temporal splits: train=70.0%, val=15.0%, test=15.0%
+2026-04-27 10:59:48,739 - __main__ - INFO - Symbol-wise temporal split statistics:
+2026-04-27 10:59:48,761 - __main__ - INFO -   Train: 21,992 samples, 1 symbols, 65.0 MB
+2026-04-27 10:59:48,762 - __main__ - INFO -     Date range: 2026-04-05 18:52:00+00:00 to 2026-04-21 01:25:00+00:00
+2026-04-27 10:59:48,783 - __main__ - INFO -   Validation: 4,712 samples, 1 symbols, 13.9 MB
+2026-04-27 10:59:48,783 - __main__ - INFO -     Date range: 2026-04-21 01:26:00+00:00 to 2026-04-24 07:58:00+00:00
+2026-04-27 10:59:48,809 - __main__ - INFO -   Test: 4,714 samples, 1 symbols, 13.9 MB
+2026-04-27 10:59:48,810 - __main__ - INFO -     Date range: 2026-04-24 07:59:00+00:00 to 2026-04-27 14:44:00+00:00
+2026-04-27 10:59:48,810 - __main__ - INFO - Filtering for trade-only samples (two-class mode)
+2026-04-27 10:59:48,873 - __main__ - INFO - Trade-only filtering results:
+2026-04-27 10:59:48,874 - __main__ - INFO -   Train: 21,992 -> 18,692 (85.0%)
+2026-04-27 10:59:48,874 - __main__ - INFO -   Val: 4,712 -> 4,033 (85.6%)
+2026-04-27 10:59:48,874 - __main__ - INFO -   Test: 4,714 -> 3,377 (71.6%)
+2026-04-27 10:59:48,874 - __main__ - INFO - ============================================================
+2026-04-27 10:59:48,874 - __main__ - INFO - FEATURE PROCESSING
+2026-04-27 10:59:48,874 - __main__ - INFO - ============================================================
+2026-04-27 10:59:50,161 - __main__ - INFO - Selecting top 128 features using mutual_info
+2026-04-27 11:00:33,881 - __main__ - INFO - mutual_info selection done in 43.7s on sample 18,692 rows, picked 128 features
+2026-04-27 11:00:33,882 - __main__ - INFO - Selected 128 features
+2026-04-27 11:00:33,882 - __main__ - INFO -   price: 109 features
+2026-04-27 11:00:33,883 - __main__ - INFO -   returns: 2 features
+2026-04-27 11:00:33,883 - __main__ - INFO -   spread: 5 features
+2026-04-27 11:00:33,883 - __main__ - INFO -   imbalance: 33 features
+2026-04-27 11:00:33,883 - __main__ - INFO -   technical: 9 features
+2026-04-27 11:00:33,883 - __main__ - INFO -   other: 6 features
+2026-04-27 11:00:33,961 - __main__ - INFO - Feature matrix shapes:
+2026-04-27 11:00:33,962 - __main__ - INFO -   Train: (18692, 128)
+2026-04-27 11:00:33,962 - __main__ - INFO -   Val: (4033, 128)
+2026-04-27 11:00:33,962 - __main__ - INFO -   Test: (3377, 128)
+2026-04-27 11:00:33,962 - __main__ - INFO - Fitting preprocessors on training data
+2026-04-27 11:00:33,962 - __main__ - INFO - Using imputer strategy: mean
+2026-04-27 11:00:34,058 - __main__ - INFO - Fitting StandardScaler
+2026-04-27 11:00:34,093 - __main__ - INFO - Scaler fitted: center range [-0.072, 73053.138]
+2026-04-27 11:00:34,093 - __main__ - INFO - Scale range: [0.000, 2455.115]
+2026-04-27 11:00:34,243 - __main__ - INFO - Saved preprocessors to /Users/ryanruehl/Desktop/ML Bot/artifacts
+2026-04-27 11:00:34,245 - __main__ - INFO - Final feature shapes: Train (18692, 128), Val (4033, 128), Test (3377, 128)
+2026-04-27 11:00:34,245 - __main__ - INFO - Target mode: direction (0/1)
+2026-04-27 11:00:34,249 - __main__ - INFO - ============================================================
+2026-04-27 11:00:34,249 - __main__ - INFO - MODEL TRAINING
+2026-04-27 11:00:34,249 - __main__ - INFO - ============================================================
+2026-04-27 11:00:34,250 - __main__ - INFO - Training MLP model with architecture: [256, 128, 64]
+2026-04-27 11:00:34,256 - __main__ - INFO - Using two-class mode: binary direction classifier (Up vs Down)
+2026-04-27 11:00:34,257 - __main__ - INFO - Direction distribution: Down=9070, Up=9622
+2026-04-27 11:00:34,257 - __main__ - INFO - Class balance: 0.515 Up ratio
+2026-04-27 11:00:34,261 - __main__ - INFO - Sample weights: mean=1.0000, std=0.0295
+2026-04-27 11:00:34,945 - __main__ - INFO - Training two-class MLP for 30 epochs...
+2026-04-27 11:00:36,572 - __main__ - INFO - Epoch 1/30: Train Loss=0.6902, Acc=0.5332 | Val Loss=0.6942, Acc=0.5259 || [2-class] cov=0.003, dirAcc=0.750, profit=7.5bps, win=0.750, conf=0.739
+2026-04-27 11:00:38,526 - __main__ - INFO - Epoch 2/30: Train Loss=0.6840, Acc=0.5533 | Val Loss=0.6947, Acc=0.5274 || [2-class] cov=0.004, dirAcc=0.667, profit=5.8bps, win=0.667, conf=0.743
+2026-04-27 11:00:41,225 - __main__ - INFO - Epoch 3/30: Train Loss=0.6785, Acc=0.5674 | Val Loss=0.6968, Acc=0.5242 || [2-class] cov=0.008, dirAcc=0.645, profit=6.0bps, win=0.645, conf=0.734
+2026-04-27 11:00:44,927 - __main__ - INFO - Epoch 4/30: Train Loss=0.6729, Acc=0.5792 | Val Loss=0.6995, Acc=0.5207 || [2-class] cov=0.017, dirAcc=0.618, profit=4.5bps, win=0.618, conf=0.731
+2026-04-27 11:00:48,888 - __main__ - INFO - Epoch 5/30: Train Loss=0.6677, Acc=0.5862 | Val Loss=0.7072, Acc=0.5115 || [2-class] cov=0.047, dirAcc=0.640, profit=4.3bps, win=0.640, conf=0.729
+2026-04-27 11:00:53,677 - __main__ - INFO - Epoch 6/30: Train Loss=0.6610, Acc=0.5993 | Val Loss=0.7111, Acc=0.5120 || [2-class] cov=0.082, dirAcc=0.630, profit=4.1bps, win=0.630, conf=0.731
+2026-04-27 11:00:58,701 - __main__ - INFO - Epoch 7/30: Train Loss=0.6531, Acc=0.6151 | Val Loss=0.7153, Acc=0.5113 || [2-class] cov=0.123, dirAcc=0.574, profit=2.0bps, win=0.574, conf=0.735
+2026-04-27 11:01:03,511 - __main__ - INFO - Epoch 8/30: Train Loss=0.6436, Acc=0.6294 | Val Loss=0.7243, Acc=0.5148 || [2-class] cov=0.193, dirAcc=0.573, profit=1.9bps, win=0.573, conf=0.742
+2026-04-27 11:01:08,758 - __main__ - INFO - Epoch 9/30: Train Loss=0.6311, Acc=0.6457 | Val Loss=0.7283, Acc=0.5170 || [2-class] cov=0.235, dirAcc=0.557, profit=1.3bps, win=0.557, conf=0.750
+2026-04-27 11:01:14,219 - __main__ - INFO - Epoch 10/30: Train Loss=0.6152, Acc=0.6647 | Val Loss=0.7438, Acc=0.5177 || [2-class] cov=0.317, dirAcc=0.549, profit=0.9bps, win=0.549, conf=0.762
+2026-04-27 11:01:19,907 - __main__ - INFO - Epoch 11/30: Train Loss=0.5942, Acc=0.6904 | Val Loss=0.7840, Acc=0.5140 || [2-class] cov=0.449, dirAcc=0.534, profit=0.7bps, win=0.534, conf=0.785
+2026-04-27 11:01:19,907 - __main__ - INFO - Early stopping at epoch 11 (patience=10)
+2026-04-27 11:01:19,916 - __main__ - INFO - Loaded best model from early stopping
+2026-04-27 11:01:19,916 - __main__ - INFO - Two-class MLP finished: iters=11, final_loss=0.5942
+2026-04-27 11:01:20,207 - __main__ - INFO - Saved sklearn MLP loss curve: sk_mlp_loss_curve.csv, sk_mlp_loss_curve.png
+2026-04-27 11:01:20,215 - __main__ - INFO - Saved per-epoch metrics to epoch_metrics_two_class.csv
+2026-04-27 11:01:20,216 - __main__ - INFO - Calibrating two-class probabilities using isotonic method
+2026-04-27 11:01:20,216 - __main__ - INFO - Calibrating two-class probabilities using isotonic method
+2026-04-27 11:01:20,216 - __main__ - ERROR - Training failed: The 'cv' parameter of CalibratedClassifierCV must be an int in the range [2, inf), an object implementing 'split' and 'get_n_splits', an iterable or None. Got 'prefit' instead.
+2026-04-27 11:01:20,216 - __main__ - ERROR - Check logs for detailed error information
+2026-04-27 11:05:20,553 - __main__ - INFO - Logging to /Users/ryanruehl/Desktop/ML Bot/artifacts/logs.txt
+2026-04-27 11:05:20,553 - __main__ - INFO - Random seed set to 42
+2026-04-27 11:05:20,553 - __main__ - INFO - Starting centralized training pipeline
+2026-04-27 11:05:20,553 - __main__ - INFO - TWO-CLASS MODE ENABLED: Training binary direction classifier only
+2026-04-27 11:05:20,553 - __main__ - INFO - ============================================================
+2026-04-27 11:05:20,553 - __main__ - INFO - LOADING AND PREPARING DATA
+2026-04-27 11:05:20,553 - __main__ - INFO - ============================================================
+2026-04-27 11:05:20,553 - __main__ - INFO - Loading data from /Users/ryanruehl/Desktop/ML Bot/data/processed/btc_1min_processed.parquet
+2026-04-27 11:05:21,340 - __main__ - INFO - Loaded dataset: 31,433 rows, 366 columns
+2026-04-27 11:05:21,345 - __main__ - INFO - Symbols: 1
+2026-04-27 11:05:21,348 - __main__ - INFO - Date range: 2026-04-05 18:52:00+00:00 to 2026-04-27 14:59:00+00:00
+2026-04-27 11:05:21,503 - __main__ - INFO - Computed ATR_14 for 1 symbols (1 NaN rows, typically the first candle per symbol)
+2026-04-27 11:05:21,516 - __main__ - INFO - Creating classification targets: horizon=15min, deadband=3.0bps
+2026-04-27 11:05:21,540 - __main__ - INFO - Input memory usage: 92.2 MB
+2026-04-27 11:05:21,548 - __main__ - INFO - Data sorted by symbol and timestamp
+2026-04-27 11:05:21,551 - __main__ - INFO - Valid samples: 31,418 / 31,433 (100.0%)
+2026-04-27 11:05:22,699 - __main__ - INFO - Classification target distribution:
+2026-04-27 11:05:22,699 - __main__ - INFO -   Down: 12,686 (40.4%)
+2026-04-27 11:05:22,699 - __main__ - INFO -   Up: 13,416 (42.7%)
+2026-04-27 11:05:22,699 - __main__ - INFO -   No-trade: 5,316 (16.9%)
+2026-04-27 11:05:22,700 - __main__ - INFO - Binary target distribution (trade vs no-trade):
+2026-04-27 11:05:22,700 - __main__ - INFO -   No-trade: 5,316 (16.9%)
+2026-04-27 11:05:22,700 - __main__ - INFO -   Trade: 26,102 (83.1%)
+2026-04-27 11:05:22,700 - __main__ - INFO - Direction distribution (trade samples only):
+2026-04-27 11:05:22,700 - __main__ - INFO -   Down: 12,686 (48.6%)
+2026-04-27 11:05:22,700 - __main__ - INFO -   Up: 13,416 (51.4%)
+2026-04-27 11:05:22,719 - __main__ - INFO - Output memory usage: 92.8 MB
+2026-04-27 11:05:22,721 - __main__ - INFO - Class distribution (two_class mode):
+2026-04-27 11:05:22,721 - __main__ - INFO -   Down: 12,686 (48.6%)
+2026-04-27 11:05:22,721 - __main__ - INFO -   Up: 13,416 (51.4%)
+2026-04-27 11:05:22,721 - __main__ - INFO - Creating symbol-wise temporal splits: train=70.0%, val=15.0%, test=15.0%
+2026-04-27 11:05:22,730 - __main__ - INFO - Symbol-wise temporal split statistics:
+2026-04-27 11:05:22,754 - __main__ - INFO -   Train: 21,992 samples, 1 symbols, 65.0 MB
+2026-04-27 11:05:22,755 - __main__ - INFO -     Date range: 2026-04-05 18:52:00+00:00 to 2026-04-21 01:25:00+00:00
+2026-04-27 11:05:22,773 - __main__ - INFO -   Validation: 4,712 samples, 1 symbols, 13.9 MB
+2026-04-27 11:05:22,773 - __main__ - INFO -     Date range: 2026-04-21 01:26:00+00:00 to 2026-04-24 07:58:00+00:00
+2026-04-27 11:05:22,796 - __main__ - INFO -   Test: 4,714 samples, 1 symbols, 13.9 MB
+2026-04-27 11:05:22,797 - __main__ - INFO -     Date range: 2026-04-24 07:59:00+00:00 to 2026-04-27 14:44:00+00:00
+2026-04-27 11:05:22,797 - __main__ - INFO - Filtering for trade-only samples (two-class mode)
+2026-04-27 11:05:22,864 - __main__ - INFO - Trade-only filtering results:
+2026-04-27 11:05:22,864 - __main__ - INFO -   Train: 21,992 -> 18,692 (85.0%)
+2026-04-27 11:05:22,864 - __main__ - INFO -   Val: 4,712 -> 4,033 (85.6%)
+2026-04-27 11:05:22,865 - __main__ - INFO -   Test: 4,714 -> 3,377 (71.6%)
+2026-04-27 11:05:22,865 - __main__ - INFO - ============================================================
+2026-04-27 11:05:22,865 - __main__ - INFO - FEATURE PROCESSING
+2026-04-27 11:05:22,865 - __main__ - INFO - ============================================================
+2026-04-27 11:05:24,046 - __main__ - INFO - Selecting top 128 features using mutual_info
+2026-04-27 11:05:57,127 - __main__ - INFO - mutual_info selection done in 33.1s on sample 18,692 rows, picked 128 features
+2026-04-27 11:05:57,129 - __main__ - INFO - Selected 128 features
+2026-04-27 11:05:57,129 - __main__ - INFO -   price: 109 features
+2026-04-27 11:05:57,129 - __main__ - INFO -   returns: 2 features
+2026-04-27 11:05:57,129 - __main__ - INFO -   spread: 5 features
+2026-04-27 11:05:57,129 - __main__ - INFO -   imbalance: 33 features
+2026-04-27 11:05:57,129 - __main__ - INFO -   technical: 9 features
+2026-04-27 11:05:57,129 - __main__ - INFO -   other: 6 features
+2026-04-27 11:05:57,181 - __main__ - INFO - Feature matrix shapes:
+2026-04-27 11:05:57,181 - __main__ - INFO -   Train: (18692, 128)
+2026-04-27 11:05:57,181 - __main__ - INFO -   Val: (4033, 128)
+2026-04-27 11:05:57,181 - __main__ - INFO -   Test: (3377, 128)
+2026-04-27 11:05:57,181 - __main__ - INFO - Fitting preprocessors on training data
+2026-04-27 11:05:57,181 - __main__ - INFO - Using imputer strategy: mean
+2026-04-27 11:05:57,244 - __main__ - INFO - Fitting StandardScaler
+2026-04-27 11:05:57,267 - __main__ - INFO - Scaler fitted: center range [-0.072, 73053.138]
+2026-04-27 11:05:57,267 - __main__ - INFO - Scale range: [0.000, 2455.115]
+2026-04-27 11:05:57,373 - __main__ - INFO - Saved preprocessors to /Users/ryanruehl/Desktop/ML Bot/artifacts
+2026-04-27 11:05:57,374 - __main__ - INFO - Final feature shapes: Train (18692, 128), Val (4033, 128), Test (3377, 128)
+2026-04-27 11:05:57,374 - __main__ - INFO - Target mode: direction (0/1)
+2026-04-27 11:05:57,377 - __main__ - INFO - ============================================================
+2026-04-27 11:05:57,377 - __main__ - INFO - MODEL TRAINING
+2026-04-27 11:05:57,377 - __main__ - INFO - ============================================================
+2026-04-27 11:05:57,377 - __main__ - INFO - Training MLP model with architecture: [256, 128, 64]
+2026-04-27 11:05:57,383 - __main__ - INFO - Using two-class mode: binary direction classifier (Up vs Down)
+2026-04-27 11:05:57,383 - __main__ - INFO - Direction distribution: Down=9070, Up=9622
+2026-04-27 11:05:57,383 - __main__ - INFO - Class balance: 0.515 Up ratio
+2026-04-27 11:05:57,387 - __main__ - INFO - Sample weights: mean=1.0000, std=0.0295
+2026-04-27 11:05:57,844 - __main__ - INFO - Training two-class MLP for 30 epochs...
+2026-04-27 11:05:59,467 - __main__ - INFO - Epoch 1/30: Train Loss=0.6902, Acc=0.5332 | Val Loss=0.6942, Acc=0.5259 || [2-class] cov=0.003, dirAcc=0.750, profit=7.5bps, win=0.750, conf=0.739
+2026-04-27 11:06:01,317 - __main__ - INFO - Epoch 2/30: Train Loss=0.6840, Acc=0.5533 | Val Loss=0.6947, Acc=0.5274 || [2-class] cov=0.004, dirAcc=0.667, profit=5.8bps, win=0.667, conf=0.743
+2026-04-27 11:06:03,571 - __main__ - INFO - Epoch 3/30: Train Loss=0.6785, Acc=0.5674 | Val Loss=0.6968, Acc=0.5242 || [2-class] cov=0.008, dirAcc=0.645, profit=6.0bps, win=0.645, conf=0.734
+2026-04-27 11:06:06,281 - __main__ - INFO - Epoch 4/30: Train Loss=0.6729, Acc=0.5792 | Val Loss=0.6995, Acc=0.5207 || [2-class] cov=0.017, dirAcc=0.618, profit=4.5bps, win=0.618, conf=0.731
+2026-04-27 11:06:09,352 - __main__ - INFO - Epoch 5/30: Train Loss=0.6677, Acc=0.5862 | Val Loss=0.7072, Acc=0.5115 || [2-class] cov=0.047, dirAcc=0.640, profit=4.3bps, win=0.640, conf=0.729
+2026-04-27 11:06:12,386 - __main__ - INFO - Epoch 6/30: Train Loss=0.6610, Acc=0.5993 | Val Loss=0.7111, Acc=0.5120 || [2-class] cov=0.082, dirAcc=0.630, profit=4.1bps, win=0.630, conf=0.731
+2026-04-27 11:06:15,836 - __main__ - INFO - Epoch 7/30: Train Loss=0.6531, Acc=0.6151 | Val Loss=0.7153, Acc=0.5113 || [2-class] cov=0.123, dirAcc=0.574, profit=2.0bps, win=0.574, conf=0.735
+2026-04-27 11:06:19,798 - __main__ - INFO - Epoch 8/30: Train Loss=0.6436, Acc=0.6294 | Val Loss=0.7243, Acc=0.5148 || [2-class] cov=0.193, dirAcc=0.573, profit=1.9bps, win=0.573, conf=0.742
+2026-04-27 11:06:24,245 - __main__ - INFO - Epoch 9/30: Train Loss=0.6311, Acc=0.6457 | Val Loss=0.7283, Acc=0.5170 || [2-class] cov=0.235, dirAcc=0.557, profit=1.3bps, win=0.557, conf=0.750
+2026-04-27 11:06:29,481 - __main__ - INFO - Epoch 10/30: Train Loss=0.6152, Acc=0.6647 | Val Loss=0.7438, Acc=0.5177 || [2-class] cov=0.317, dirAcc=0.549, profit=0.9bps, win=0.549, conf=0.762
+2026-04-27 11:06:37,190 - __main__ - INFO - Epoch 11/30: Train Loss=0.5942, Acc=0.6904 | Val Loss=0.7840, Acc=0.5140 || [2-class] cov=0.449, dirAcc=0.534, profit=0.7bps, win=0.534, conf=0.785
+2026-04-27 11:06:37,191 - __main__ - INFO - Early stopping at epoch 11 (patience=10)
+2026-04-27 11:06:37,199 - __main__ - INFO - Loaded best model from early stopping
+2026-04-27 11:06:37,199 - __main__ - INFO - Two-class MLP finished: iters=11, final_loss=0.5942
+2026-04-27 11:06:37,552 - __main__ - INFO - Saved sklearn MLP loss curve: sk_mlp_loss_curve.csv, sk_mlp_loss_curve.png
+2026-04-27 11:06:37,556 - __main__ - INFO - Saved per-epoch metrics to epoch_metrics_two_class.csv
+2026-04-27 11:06:37,556 - __main__ - INFO - Calibrating two-class probabilities using isotonic method
+2026-04-27 11:06:37,556 - __main__ - INFO - Calibrating two-class probabilities using isotonic method
+2026-04-27 11:06:37,594 - __main__ - INFO - Two-class probability calibration completed
+2026-04-27 11:06:37,595 - __main__ - INFO - Optimizing confidence tau (cost=1.0 bps, select_by=profit, min_coverage=0.0)
+2026-04-27 11:06:37,620 - __main__ - INFO - Best by profit: tau=0.720, profit=26.69 bps, cov=0.273%, trades=11
+2026-04-27 11:06:37,620 - __main__ - INFO - Best by EV: tau=0.520, EV=0.83, cov=35.755%, profit=2.33
+2026-04-27 11:06:37,620 - __main__ - INFO - Chosen tau (profit): 0.720 | profit=26.69 bps, cov=0.273%, EV=0.07, trades=11
+2026-04-27 11:06:37,625 - __main__ - INFO - Optimized confidence tau: 0.720
+2026-04-27 11:06:37,670 - __main__ - INFO - Saved decision threshold config to /Users/ryanruehl/Desktop/ML Bot/artifacts/decision_threshold.json
+2026-04-27 11:06:37,671 - __main__ - INFO - Validation profit with tau=0.720: 26.69 bps (coverage: 0.3%)
+2026-04-27 11:06:37,717 - __main__ - INFO - Saved two-class model to /Users/ryanruehl/Desktop/ML Bot/artifacts
+2026-04-27 11:06:37,719 - __main__ - INFO - ============================================================
+2026-04-27 11:06:37,719 - __main__ - INFO - EVALUATION AND SAVING
+2026-04-27 11:06:37,719 - __main__ - INFO - ============================================================
+2026-04-27 11:06:37,719 - __main__ - INFO - Evaluating model performance...
+2026-04-27 11:06:37,719 - __main__ - INFO - ATR volatility channel gate (0.0 <= ATR_14 <= 100.0): 2 trades filtered out; 1 remain from 3 confidence-passing trades
+2026-04-27 11:06:37,754 - __main__ - INFO - ============================================================
+2026-04-27 11:06:37,754 - __main__ - INFO - CENTRALIZED TRAINING FINAL RESULTS
+2026-04-27 11:06:37,755 - __main__ - INFO - ============================================================
+2026-04-27 11:06:37,755 - __main__ - INFO - TEST METRICS:
+2026-04-27 11:06:37,755 - __main__ - INFO -   Direction Accuracy: 0.0000
+2026-04-27 11:06:37,755 - __main__ - INFO -   Coverage: 0.0003 (1/3377 samples)
+2026-04-27 11:06:37,755 - __main__ - INFO -   Avg Confidence: 1.0000
+2026-04-27 11:06:37,755 - __main__ - INFO -   Avg Profit: -7.22 bps
+2026-04-27 11:06:37,755 - __main__ - INFO -   Median Profit: -7.22 bps
+2026-04-27 11:06:37,755 - __main__ - INFO -   Win Rate: 0.000
+2026-04-27 11:06:37,755 - __main__ - INFO -   Sharpe Ratio: -722270967.161
+2026-04-27 11:06:37,755 - __main__ - INFO -   Profit Range: [-7.2, -7.2] bps
+2026-04-27 11:06:37,755 - __main__ - INFO -   Profit Percentiles:
+2026-04-27 11:06:37,756 - __main__ - INFO -     P10: -7.22 bps
+2026-04-27 11:06:37,756 - __main__ - INFO -     P25: -7.22 bps
+2026-04-27 11:06:37,756 - __main__ - INFO -     P75: -7.22 bps
+2026-04-27 11:06:37,756 - __main__ - INFO -     P90: -7.22 bps
+2026-04-27 11:06:37,756 - __main__ - INFO - ============================================================
+2026-04-27 11:06:37,958 - __main__ - INFO - Two-class artifacts saved to /Users/ryanruehl/Desktop/ML Bot/artifacts
+2026-04-27 11:06:37,959 - __main__ - INFO - Results saved successfully
+2026-04-27 11:06:37,959 - __main__ - INFO - Training pipeline completed successfully
+2026-04-27 11:06:40,110 - __main__ - INFO - Saved progress plots: loss_progress.png, acc_progress.png, val_coverage.png, val_dir_acc.png, val_profit.png, val_winrate.png, val_conf.png
+2026-04-27 11:06:40,156 - __main__ - INFO - ================================================================================
+2026-04-27 11:06:40,157 - __main__ - INFO - TRAINING COMPLETED SUCCESSFULLY
+2026-04-27 11:06:40,157 - __main__ - INFO - ================================================================================
+2026-04-27 11:06:40,159 - __main__ - INFO - Results saved to: /Users/ryanruehl/Desktop/ML Bot/artifacts
+2026-04-27 11:06:40,160 - __main__ - INFO - Key files:
+2026-04-27 11:06:40,160 - __main__ - INFO -   - Model: /Users/ryanruehl/Desktop/ML Bot/artifacts/model.pth (or model.joblib)
+2026-04-27 11:06:40,160 - __main__ - INFO -   - Two-class metrics: /Users/ryanruehl/Desktop/ML Bot/artifacts/metrics_two_class.json
+2026-04-27 11:06:40,160 - __main__ - INFO -   - Two-class model: /Users/ryanruehl/Desktop/ML Bot/artifacts/two_class_model.joblib
+2026-04-27 11:06:40,161 - __main__ - INFO -   - Decision threshold: /Users/ryanruehl/Desktop/ML Bot/artifacts/decision_threshold.json
+2026-04-27 11:06:40,161 - __main__ - INFO -   - Predictions: /Users/ryanruehl/Desktop/ML Bot/artifacts/test_predictions_two_class.csv
+2026-04-27 11:06:40,161 - __main__ - INFO -   - Config: /Users/ryanruehl/Desktop/ML Bot/artifacts/config.yaml
+2026-04-27 11:06:40,161 - __main__ - INFO -   - Logs: /Users/ryanruehl/Desktop/ML Bot/artifacts/logs.txt
+2026-04-27 11:06:40,161 - __main__ - INFO -   - Preprocessors: /Users/ryanruehl/Desktop/ML Bot/artifacts/imputer.joblib, /Users/ryanruehl/Desktop/ML Bot/artifacts/scaler.joblib
+2026-04-27 11:06:40,161 - __main__ - INFO - Final two-class test performance:
+2026-04-27 11:06:40,162 - __main__ - INFO -   Coverage: 0.0% (1 trades)
+2026-04-27 11:06:40,162 - __main__ - INFO -   Direction Accuracy: 0.0000
+2026-04-27 11:06:40,162 - __main__ - INFO -   Average Profit: -7.22 bps
+2026-04-27 11:06:40,163 - __main__ - INFO -   Win Rate: 0.0%
+2026-04-27 11:06:40,163 - __main__ - INFO - ================================================================================
+2026-04-27 11:06:40,164 - __main__ - INFO - Wrote /Users/ryanruehl/Desktop/ML Bot/artifacts/model_updated.flag — bot will hot-reload within 5 min
+2026-04-27 11:10:02,693 - __main__ - INFO - Logging to /Users/ryanruehl/Desktop/ML Bot/artifacts/logs.txt
+2026-04-27 11:10:02,694 - __main__ - INFO - Random seed set to 42
+2026-04-27 11:10:02,722 - __main__ - INFO - Starting centralized training pipeline
+2026-04-27 11:10:02,722 - __main__ - INFO - TWO-CLASS MODE ENABLED: Training binary direction classifier only
+2026-04-27 11:10:02,723 - __main__ - INFO - ============================================================
+2026-04-27 11:10:02,725 - __main__ - INFO - LOADING AND PREPARING DATA
+2026-04-27 11:10:02,725 - __main__ - INFO - ============================================================
+2026-04-27 11:10:02,725 - __main__ - INFO - Loading data from /Users/ryanruehl/Desktop/ML Bot/data/processed/btc_1min_processed.parquet
+2026-04-27 11:10:03,747 - __main__ - INFO - Loaded dataset: 31,433 rows, 366 columns
+2026-04-27 11:10:03,765 - __main__ - INFO - Symbols: 1
+2026-04-27 11:10:03,769 - __main__ - INFO - Date range: 2026-04-05 18:52:00+00:00 to 2026-04-27 14:59:00+00:00
+2026-04-27 11:10:03,964 - __main__ - INFO - Computed ATR_14 for 1 symbols (1 NaN rows, typically the first candle per symbol)
+2026-04-27 11:10:03,972 - __main__ - INFO - Creating classification targets: horizon=15min, deadband=3.0bps
+2026-04-27 11:10:04,012 - __main__ - INFO - Input memory usage: 92.2 MB
+2026-04-27 11:10:04,030 - __main__ - INFO - Data sorted by symbol and timestamp
+2026-04-27 11:10:04,038 - __main__ - INFO - Valid samples: 31,418 / 31,433 (100.0%)
+2026-04-27 11:10:05,669 - __main__ - INFO - Classification target distribution:
+2026-04-27 11:10:05,681 - __main__ - INFO -   Down: 12,686 (40.4%)
+2026-04-27 11:10:05,681 - __main__ - INFO -   Up: 13,416 (42.7%)
+2026-04-27 11:10:05,682 - __main__ - INFO -   No-trade: 5,316 (16.9%)
+2026-04-27 11:10:05,715 - __main__ - INFO - Binary target distribution (trade vs no-trade):
+2026-04-27 11:10:05,731 - __main__ - INFO -   No-trade: 5,316 (16.9%)
+2026-04-27 11:10:05,732 - __main__ - INFO -   Trade: 26,102 (83.1%)
+2026-04-27 11:10:05,735 - __main__ - INFO - Direction distribution (trade samples only):
+2026-04-27 11:10:05,740 - __main__ - INFO -   Down: 12,686 (48.6%)
+2026-04-27 11:10:05,742 - __main__ - INFO -   Up: 13,416 (51.4%)
+2026-04-27 11:10:05,832 - __main__ - INFO - Output memory usage: 92.8 MB
+2026-04-27 11:10:05,836 - __main__ - INFO - Class distribution (two_class mode):
+2026-04-27 11:10:05,836 - __main__ - INFO -   Down: 12,686 (48.6%)
+2026-04-27 11:10:05,836 - __main__ - INFO -   Up: 13,416 (51.4%)
+2026-04-27 11:10:05,845 - __main__ - INFO - Creating symbol-wise temporal splits: train=70.0%, val=15.0%, test=15.0%
+2026-04-27 11:10:05,874 - __main__ - INFO - Symbol-wise temporal split statistics:
+2026-04-27 11:10:05,974 - __main__ - INFO -   Train: 21,992 samples, 1 symbols, 65.0 MB
+2026-04-27 11:10:05,975 - __main__ - INFO -     Date range: 2026-04-05 18:52:00+00:00 to 2026-04-21 01:25:00+00:00
+2026-04-27 11:10:06,048 - __main__ - INFO -   Validation: 4,712 samples, 1 symbols, 13.9 MB
+2026-04-27 11:10:06,052 - __main__ - INFO -     Date range: 2026-04-21 01:26:00+00:00 to 2026-04-24 07:58:00+00:00
+2026-04-27 11:10:06,097 - __main__ - INFO -   Test: 4,714 samples, 1 symbols, 13.9 MB
+2026-04-27 11:10:06,097 - __main__ - INFO -     Date range: 2026-04-24 07:59:00+00:00 to 2026-04-27 14:44:00+00:00
+2026-04-27 11:10:06,098 - __main__ - INFO - Filtering for trade-only samples (two-class mode)
+2026-04-27 11:10:06,248 - __main__ - INFO - Trade-only filtering results:
+2026-04-27 11:10:06,248 - __main__ - INFO -   Train: 21,992 -> 18,692 (85.0%)
+2026-04-27 11:10:06,248 - __main__ - INFO -   Val: 4,712 -> 4,033 (85.6%)
+2026-04-27 11:10:06,252 - __main__ - INFO -   Test: 4,714 -> 3,377 (71.6%)
+2026-04-27 11:10:06,254 - __main__ - INFO - ============================================================
+2026-04-27 11:10:06,254 - __main__ - INFO - FEATURE PROCESSING
+2026-04-27 11:10:06,258 - __main__ - INFO - ============================================================
+2026-04-27 11:10:07,970 - __main__ - INFO - Selecting top 128 features using mutual_info
+2026-04-27 11:10:41,226 - __main__ - INFO - mutual_info selection done in 33.3s on sample 18,692 rows, picked 128 features
+2026-04-27 11:10:41,227 - __main__ - INFO - Selected 128 features
+2026-04-27 11:10:41,227 - __main__ - INFO -   price: 109 features
+2026-04-27 11:10:41,227 - __main__ - INFO -   returns: 2 features
+2026-04-27 11:10:41,227 - __main__ - INFO -   spread: 5 features
+2026-04-27 11:10:41,227 - __main__ - INFO -   imbalance: 33 features
+2026-04-27 11:10:41,228 - __main__ - INFO -   technical: 9 features
+2026-04-27 11:10:41,228 - __main__ - INFO -   other: 6 features
+2026-04-27 11:10:41,283 - __main__ - INFO - Feature matrix shapes:
+2026-04-27 11:10:41,283 - __main__ - INFO -   Train: (18692, 128)
+2026-04-27 11:10:41,283 - __main__ - INFO -   Val: (4033, 128)
+2026-04-27 11:10:41,284 - __main__ - INFO -   Test: (3377, 128)
+2026-04-27 11:10:41,284 - __main__ - INFO - Fitting preprocessors on training data
+2026-04-27 11:10:41,284 - __main__ - INFO - Using imputer strategy: mean
+2026-04-27 11:10:41,358 - __main__ - INFO - Fitting StandardScaler
+2026-04-27 11:10:41,390 - __main__ - INFO - Scaler fitted: center range [-0.072, 73053.138]
+2026-04-27 11:10:41,390 - __main__ - INFO - Scale range: [0.000, 2455.115]
+2026-04-27 11:10:41,506 - __main__ - INFO - Saved preprocessors to /Users/ryanruehl/Desktop/ML Bot/artifacts
+2026-04-27 11:10:41,507 - __main__ - INFO - Final feature shapes: Train (18692, 128), Val (4033, 128), Test (3377, 128)
+2026-04-27 11:10:41,507 - __main__ - INFO - Target mode: direction (0/1)
+2026-04-27 11:10:41,510 - __main__ - INFO - ============================================================
+2026-04-27 11:10:41,510 - __main__ - INFO - MODEL TRAINING
+2026-04-27 11:10:41,510 - __main__ - INFO - ============================================================
+2026-04-27 11:10:41,510 - __main__ - INFO - Training MLP model with architecture: [256, 128, 64]
+2026-04-27 11:10:41,523 - __main__ - INFO - Using two-class mode: binary direction classifier (Up vs Down)
+2026-04-27 11:10:41,523 - __main__ - INFO - Direction distribution: Down=9070, Up=9622
+2026-04-27 11:10:41,523 - __main__ - INFO - Class balance: 0.515 Up ratio
+2026-04-27 11:10:41,527 - __main__ - INFO - Sample weights: mean=1.0000, std=0.0295
+2026-04-27 11:10:41,978 - __main__ - INFO - Training two-class MLP for 30 epochs...
+2026-04-27 11:10:42,945 - __main__ - INFO - Epoch 1/30: Train Loss=0.6902, Acc=0.5332 | Val Loss=0.6942, Acc=0.5259 || [2-class] cov=0.003, dirAcc=0.750, profit=7.5bps, win=0.750, conf=0.739
+2026-04-27 11:10:44,405 - __main__ - INFO - Epoch 2/30: Train Loss=0.6840, Acc=0.5533 | Val Loss=0.6947, Acc=0.5274 || [2-class] cov=0.004, dirAcc=0.667, profit=5.8bps, win=0.667, conf=0.743
+2026-04-27 11:10:46,220 - __main__ - INFO - Epoch 3/30: Train Loss=0.6785, Acc=0.5674 | Val Loss=0.6968, Acc=0.5242 || [2-class] cov=0.008, dirAcc=0.645, profit=6.0bps, win=0.645, conf=0.734
+2026-04-27 11:10:48,473 - __main__ - INFO - Epoch 4/30: Train Loss=0.6729, Acc=0.5792 | Val Loss=0.6995, Acc=0.5207 || [2-class] cov=0.017, dirAcc=0.618, profit=4.5bps, win=0.618, conf=0.731
+2026-04-27 11:10:50,999 - __main__ - INFO - Epoch 5/30: Train Loss=0.6677, Acc=0.5862 | Val Loss=0.7072, Acc=0.5115 || [2-class] cov=0.047, dirAcc=0.640, profit=4.3bps, win=0.640, conf=0.729
+2026-04-27 11:10:53,998 - __main__ - INFO - Epoch 6/30: Train Loss=0.6610, Acc=0.5993 | Val Loss=0.7111, Acc=0.5120 || [2-class] cov=0.082, dirAcc=0.630, profit=4.1bps, win=0.630, conf=0.731
+2026-04-27 11:10:57,418 - __main__ - INFO - Epoch 7/30: Train Loss=0.6531, Acc=0.6151 | Val Loss=0.7153, Acc=0.5113 || [2-class] cov=0.123, dirAcc=0.574, profit=2.0bps, win=0.574, conf=0.735
+2026-04-27 11:11:01,079 - __main__ - INFO - Epoch 8/30: Train Loss=0.6436, Acc=0.6294 | Val Loss=0.7243, Acc=0.5148 || [2-class] cov=0.193, dirAcc=0.573, profit=1.9bps, win=0.573, conf=0.742
+2026-04-27 11:11:05,202 - __main__ - INFO - Epoch 9/30: Train Loss=0.6311, Acc=0.6457 | Val Loss=0.7283, Acc=0.5170 || [2-class] cov=0.235, dirAcc=0.557, profit=1.3bps, win=0.557, conf=0.750
+2026-04-27 11:11:09,852 - __main__ - INFO - Epoch 10/30: Train Loss=0.6152, Acc=0.6647 | Val Loss=0.7438, Acc=0.5177 || [2-class] cov=0.317, dirAcc=0.549, profit=0.9bps, win=0.549, conf=0.762
+2026-04-27 11:11:14,933 - __main__ - INFO - Epoch 11/30: Train Loss=0.5942, Acc=0.6904 | Val Loss=0.7840, Acc=0.5140 || [2-class] cov=0.449, dirAcc=0.534, profit=0.7bps, win=0.534, conf=0.785
+2026-04-27 11:11:14,934 - __main__ - INFO - Early stopping at epoch 11 (patience=10)
+2026-04-27 11:11:14,943 - __main__ - INFO - Loaded best model from early stopping
+2026-04-27 11:11:14,944 - __main__ - INFO - Two-class MLP finished: iters=11, final_loss=0.5942
+2026-04-27 11:11:15,233 - __main__ - INFO - Saved sklearn MLP loss curve: sk_mlp_loss_curve.csv, sk_mlp_loss_curve.png
+2026-04-27 11:11:15,238 - __main__ - INFO - Saved per-epoch metrics to epoch_metrics_two_class.csv
+2026-04-27 11:11:15,238 - __main__ - INFO - Calibrating two-class probabilities using isotonic method
+2026-04-27 11:11:15,239 - __main__ - INFO - Calibrating two-class probabilities using isotonic method
+2026-04-27 11:11:15,289 - __main__ - INFO - Two-class probability calibration completed
+2026-04-27 11:11:15,290 - __main__ - INFO - Using provided confidence tau: 0.700
+2026-04-27 11:11:15,341 - __main__ - INFO - Saved decision threshold config to /Users/ryanruehl/Desktop/ML Bot/artifacts/decision_threshold.json
+2026-04-27 11:11:15,341 - __main__ - INFO - Validation profit with tau=0.700: 20.09 bps (coverage: 0.6%)
+2026-04-27 11:11:15,388 - __main__ - INFO - Saved two-class model to /Users/ryanruehl/Desktop/ML Bot/artifacts
+2026-04-27 11:11:15,389 - __main__ - INFO - ============================================================
+2026-04-27 11:11:15,389 - __main__ - INFO - EVALUATION AND SAVING
+2026-04-27 11:11:15,389 - __main__ - INFO - ============================================================
+2026-04-27 11:11:15,389 - __main__ - INFO - Evaluating model performance...
+2026-04-27 11:11:15,390 - __main__ - INFO - ATR volatility channel gate (10.0 <= ATR_14 <= 35.0): 8 trades filtered out; 0 remain from 8 confidence-passing trades
+2026-04-27 11:11:15,428 - __main__ - INFO - ============================================================
+2026-04-27 11:11:15,428 - __main__ - INFO - CENTRALIZED TRAINING FINAL RESULTS
+2026-04-27 11:11:15,428 - __main__ - INFO - ============================================================
+2026-04-27 11:11:15,428 - __main__ - INFO - TEST METRICS:
+2026-04-27 11:11:15,428 - __main__ - INFO -   Direction Accuracy: 0.0000
+2026-04-27 11:11:15,428 - __main__ - INFO -   Coverage: 0.0000 (0/3377 samples)
+2026-04-27 11:11:15,429 - __main__ - INFO -   Avg Confidence: 0.5222
+2026-04-27 11:11:15,429 - __main__ - INFO -   Avg Profit: -1.00 bps
+2026-04-27 11:11:15,429 - __main__ - INFO -   Median Profit: -1.00 bps
+2026-04-27 11:11:15,429 - __main__ - INFO -   Win Rate: 0.000
+2026-04-27 11:11:15,429 - __main__ - INFO -   Sharpe Ratio: 0.000
+2026-04-27 11:11:15,429 - __main__ - INFO -   Profit Range: [0.0, 0.0] bps
+2026-04-27 11:11:15,429 - __main__ - INFO -   Profit Percentiles:
+2026-04-27 11:11:15,430 - __main__ - INFO -     P10: 0.00 bps
+2026-04-27 11:11:15,430 - __main__ - INFO -     P25: 0.00 bps
+2026-04-27 11:11:15,430 - __main__ - INFO -     P75: 0.00 bps
+2026-04-27 11:11:15,430 - __main__ - INFO -     P90: 0.00 bps
+2026-04-27 11:11:15,430 - __main__ - INFO - ============================================================
+2026-04-27 11:11:15,561 - __main__ - INFO - Two-class artifacts saved to /Users/ryanruehl/Desktop/ML Bot/artifacts
+2026-04-27 11:11:15,562 - __main__ - INFO - Results saved successfully
+2026-04-27 11:11:15,562 - __main__ - INFO - Training pipeline completed successfully
+2026-04-27 11:11:17,141 - __main__ - INFO - Saved progress plots: loss_progress.png, acc_progress.png, val_coverage.png, val_dir_acc.png, val_profit.png, val_winrate.png, val_conf.png
+2026-04-27 11:11:17,213 - __main__ - INFO - ================================================================================
+2026-04-27 11:11:17,214 - __main__ - INFO - TRAINING COMPLETED SUCCESSFULLY
+2026-04-27 11:11:17,214 - __main__ - INFO - ================================================================================
+2026-04-27 11:11:17,214 - __main__ - INFO - Results saved to: /Users/ryanruehl/Desktop/ML Bot/artifacts
+2026-04-27 11:11:17,214 - __main__ - INFO - Key files:
+2026-04-27 11:11:17,215 - __main__ - INFO -   - Model: /Users/ryanruehl/Desktop/ML Bot/artifacts/model.pth (or model.joblib)
+2026-04-27 11:11:17,215 - __main__ - INFO -   - Two-class metrics: /Users/ryanruehl/Desktop/ML Bot/artifacts/metrics_two_class.json
+2026-04-27 11:11:17,215 - __main__ - INFO -   - Two-class model: /Users/ryanruehl/Desktop/ML Bot/artifacts/two_class_model.joblib
+2026-04-27 11:11:17,215 - __main__ - INFO -   - Decision threshold: /Users/ryanruehl/Desktop/ML Bot/artifacts/decision_threshold.json
+2026-04-27 11:11:17,215 - __main__ - INFO -   - Predictions: /Users/ryanruehl/Desktop/ML Bot/artifacts/test_predictions_two_class.csv
+2026-04-27 11:11:17,215 - __main__ - INFO -   - Config: /Users/ryanruehl/Desktop/ML Bot/artifacts/config.yaml
+2026-04-27 11:11:17,216 - __main__ - INFO -   - Logs: /Users/ryanruehl/Desktop/ML Bot/artifacts/logs.txt
+2026-04-27 11:11:17,216 - __main__ - INFO -   - Preprocessors: /Users/ryanruehl/Desktop/ML Bot/artifacts/imputer.joblib, /Users/ryanruehl/Desktop/ML Bot/artifacts/scaler.joblib
+2026-04-27 11:11:17,216 - __main__ - INFO - Final two-class test performance:
+2026-04-27 11:11:17,217 - __main__ - INFO -   Coverage: 0.0% (no trades executed)
+2026-04-27 11:11:17,217 - __main__ - INFO - ================================================================================
+2026-04-27 11:11:17,218 - __main__ - INFO - Wrote /Users/ryanruehl/Desktop/ML Bot/artifacts/model_updated.flag — bot will hot-reload within 5 min
+2026-04-27 11:16:12,032 - __main__ - INFO - Logging to /Users/ryanruehl/Desktop/ML Bot/artifacts/logs.txt
+2026-04-27 11:16:12,034 - __main__ - INFO - Random seed set to 42
+2026-04-27 11:16:12,037 - __main__ - INFO - Starting centralized training pipeline
+2026-04-27 11:16:12,037 - __main__ - INFO - TWO-CLASS MODE ENABLED: Training binary direction classifier only
+2026-04-27 11:16:12,037 - __main__ - INFO - ============================================================
+2026-04-27 11:16:12,037 - __main__ - INFO - LOADING AND PREPARING DATA
+2026-04-27 11:16:12,037 - __main__ - INFO - ============================================================
+2026-04-27 11:16:12,038 - __main__ - INFO - Loading data from /Users/ryanruehl/Desktop/ML Bot/data/processed/btc_1min_processed.parquet
+2026-04-27 11:16:12,796 - __main__ - INFO - Loaded dataset: 31,433 rows, 366 columns
+2026-04-27 11:16:12,805 - __main__ - INFO - Symbols: 1
+2026-04-27 11:16:12,808 - __main__ - INFO - Date range: 2026-04-05 18:52:00+00:00 to 2026-04-27 14:59:00+00:00
+2026-04-27 11:16:13,086 - __main__ - INFO - Computed ATR_14 for 1 symbols (1 NaN rows, typically the first candle per symbol)
+2026-04-27 11:16:13,122 - __main__ - INFO - Creating classification targets: horizon=15min, deadband=3.0bps
+2026-04-27 11:16:13,260 - __main__ - INFO - Input memory usage: 92.2 MB
+2026-04-27 11:16:13,279 - __main__ - INFO - Data sorted by symbol and timestamp
+2026-04-27 11:16:13,287 - __main__ - INFO - Valid samples: 31,418 / 31,433 (100.0%)
+2026-04-27 11:16:14,763 - __main__ - INFO - Classification target distribution:
+2026-04-27 11:16:14,763 - __main__ - INFO -   Down: 12,686 (40.4%)
+2026-04-27 11:16:14,764 - __main__ - INFO -   Up: 13,416 (42.7%)
+2026-04-27 11:16:14,764 - __main__ - INFO -   No-trade: 5,316 (16.9%)
+2026-04-27 11:16:14,770 - __main__ - INFO - Binary target distribution (trade vs no-trade):
+2026-04-27 11:16:14,770 - __main__ - INFO -   No-trade: 5,316 (16.9%)
+2026-04-27 11:16:14,771 - __main__ - INFO -   Trade: 26,102 (83.1%)
+2026-04-27 11:16:14,771 - __main__ - INFO - Direction distribution (trade samples only):
+2026-04-27 11:16:14,772 - __main__ - INFO -   Down: 12,686 (48.6%)
+2026-04-27 11:16:14,772 - __main__ - INFO -   Up: 13,416 (51.4%)
+2026-04-27 11:16:14,799 - __main__ - INFO - Output memory usage: 92.8 MB
+2026-04-27 11:16:14,802 - __main__ - INFO - Class distribution (two_class mode):
+2026-04-27 11:16:14,803 - __main__ - INFO -   Down: 12,686 (48.6%)
+2026-04-27 11:16:14,803 - __main__ - INFO -   Up: 13,416 (51.4%)
+2026-04-27 11:16:14,803 - __main__ - INFO - Creating symbol-wise temporal splits: train=70.0%, val=15.0%, test=15.0%
+2026-04-27 11:16:14,813 - __main__ - INFO - Symbol-wise temporal split statistics:
+2026-04-27 11:16:14,837 - __main__ - INFO -   Train: 21,992 samples, 1 symbols, 65.0 MB
+2026-04-27 11:16:14,838 - __main__ - INFO -     Date range: 2026-04-05 18:52:00+00:00 to 2026-04-21 01:25:00+00:00
+2026-04-27 11:16:14,879 - __main__ - INFO -   Validation: 4,712 samples, 1 symbols, 13.9 MB
+2026-04-27 11:16:14,880 - __main__ - INFO -     Date range: 2026-04-21 01:26:00+00:00 to 2026-04-24 07:58:00+00:00
+2026-04-27 11:16:14,931 - __main__ - INFO -   Test: 4,714 samples, 1 symbols, 13.9 MB
+2026-04-27 11:16:14,933 - __main__ - INFO -     Date range: 2026-04-24 07:59:00+00:00 to 2026-04-27 14:44:00+00:00
+2026-04-27 11:16:14,934 - __main__ - INFO - Filtering for trade-only samples (two-class mode)
+2026-04-27 11:16:15,041 - __main__ - INFO - Trade-only filtering results:
+2026-04-27 11:16:15,041 - __main__ - INFO -   Train: 21,992 -> 18,692 (85.0%)
+2026-04-27 11:16:15,042 - __main__ - INFO -   Val: 4,712 -> 4,033 (85.6%)
+2026-04-27 11:16:15,042 - __main__ - INFO -   Test: 4,714 -> 3,377 (71.6%)
+2026-04-27 11:16:15,043 - __main__ - INFO - ============================================================
+2026-04-27 11:16:15,043 - __main__ - INFO - FEATURE PROCESSING
+2026-04-27 11:16:15,044 - __main__ - INFO - ============================================================
+2026-04-27 11:16:17,973 - __main__ - INFO - Selecting top 128 features using mutual_info
+2026-04-27 11:16:49,401 - __main__ - INFO - mutual_info selection done in 31.4s on sample 18,692 rows, picked 128 features
+2026-04-27 11:16:49,403 - __main__ - INFO - Selected 128 features
+2026-04-27 11:16:49,403 - __main__ - INFO -   price: 109 features
+2026-04-27 11:16:49,403 - __main__ - INFO -   returns: 2 features
+2026-04-27 11:16:49,403 - __main__ - INFO -   spread: 5 features
+2026-04-27 11:16:49,404 - __main__ - INFO -   imbalance: 33 features
+2026-04-27 11:16:49,404 - __main__ - INFO -   technical: 9 features
+2026-04-27 11:16:49,404 - __main__ - INFO -   other: 6 features
+2026-04-27 11:16:49,459 - __main__ - INFO - Feature matrix shapes:
+2026-04-27 11:16:49,460 - __main__ - INFO -   Train: (18692, 128)
+2026-04-27 11:16:49,460 - __main__ - INFO -   Val: (4033, 128)
+2026-04-27 11:16:49,460 - __main__ - INFO -   Test: (3377, 128)
+2026-04-27 11:16:49,460 - __main__ - INFO - Fitting preprocessors on training data
+2026-04-27 11:16:49,460 - __main__ - INFO - Using imputer strategy: mean
+2026-04-27 11:16:49,529 - __main__ - INFO - Fitting StandardScaler
+2026-04-27 11:16:49,560 - __main__ - INFO - Scaler fitted: center range [-0.072, 73053.138]
+2026-04-27 11:16:49,560 - __main__ - INFO - Scale range: [0.000, 2455.115]
+2026-04-27 11:16:49,668 - __main__ - INFO - Saved preprocessors to /Users/ryanruehl/Desktop/ML Bot/artifacts
+2026-04-27 11:16:49,669 - __main__ - INFO - Final feature shapes: Train (18692, 128), Val (4033, 128), Test (3377, 128)
+2026-04-27 11:16:49,669 - __main__ - INFO - Target mode: direction (0/1)
+2026-04-27 11:16:49,671 - __main__ - INFO - ============================================================
+2026-04-27 11:16:49,671 - __main__ - INFO - MODEL TRAINING
+2026-04-27 11:16:49,671 - __main__ - INFO - ============================================================
+2026-04-27 11:16:49,671 - __main__ - INFO - Training MLP model with architecture: [256, 128, 64]
+2026-04-27 11:16:49,680 - __main__ - INFO - Using two-class mode: binary direction classifier (Up vs Down)
+2026-04-27 11:16:49,682 - __main__ - INFO - Direction distribution: Down=9070, Up=9622
+2026-04-27 11:16:49,682 - __main__ - INFO - Class balance: 0.515 Up ratio
+2026-04-27 11:16:49,688 - __main__ - INFO - Sample weights: mean=1.0000, std=0.0295
+2026-04-27 11:16:50,083 - __main__ - INFO - Training two-class MLP for 30 epochs...
+2026-04-27 11:16:51,050 - __main__ - INFO - Epoch 1/30: Train Loss=0.6902, Acc=0.5332 | Val Loss=0.6942, Acc=0.5259 || [2-class] cov=0.003, dirAcc=0.750, profit=7.5bps, win=0.750, conf=0.739
+2026-04-27 11:16:52,519 - __main__ - INFO - Epoch 2/30: Train Loss=0.6840, Acc=0.5533 | Val Loss=0.6947, Acc=0.5274 || [2-class] cov=0.004, dirAcc=0.667, profit=5.8bps, win=0.667, conf=0.743
+2026-04-27 11:16:54,119 - __main__ - INFO - Epoch 3/30: Train Loss=0.6785, Acc=0.5674 | Val Loss=0.6968, Acc=0.5242 || [2-class] cov=0.008, dirAcc=0.645, profit=6.0bps, win=0.645, conf=0.734
+2026-04-27 11:16:56,203 - __main__ - INFO - Epoch 4/30: Train Loss=0.6729, Acc=0.5792 | Val Loss=0.6995, Acc=0.5207 || [2-class] cov=0.017, dirAcc=0.618, profit=4.5bps, win=0.618, conf=0.731
+2026-04-27 11:16:58,489 - __main__ - INFO - Epoch 5/30: Train Loss=0.6677, Acc=0.5862 | Val Loss=0.7072, Acc=0.5115 || [2-class] cov=0.047, dirAcc=0.640, profit=4.3bps, win=0.640, conf=0.729
+2026-04-27 11:17:01,227 - __main__ - INFO - Epoch 6/30: Train Loss=0.6610, Acc=0.5993 | Val Loss=0.7111, Acc=0.5120 || [2-class] cov=0.082, dirAcc=0.630, profit=4.1bps, win=0.630, conf=0.731
+2026-04-27 11:17:04,227 - __main__ - INFO - Epoch 7/30: Train Loss=0.6531, Acc=0.6151 | Val Loss=0.7153, Acc=0.5113 || [2-class] cov=0.123, dirAcc=0.574, profit=2.0bps, win=0.574, conf=0.735
+2026-04-27 11:17:08,205 - __main__ - INFO - Epoch 8/30: Train Loss=0.6436, Acc=0.6294 | Val Loss=0.7243, Acc=0.5148 || [2-class] cov=0.193, dirAcc=0.573, profit=1.9bps, win=0.573, conf=0.742
+2026-04-27 11:17:11,939 - __main__ - INFO - Epoch 9/30: Train Loss=0.6311, Acc=0.6457 | Val Loss=0.7283, Acc=0.5170 || [2-class] cov=0.235, dirAcc=0.557, profit=1.3bps, win=0.557, conf=0.750
+2026-04-27 11:17:16,441 - __main__ - INFO - Epoch 10/30: Train Loss=0.6152, Acc=0.6647 | Val Loss=0.7438, Acc=0.5177 || [2-class] cov=0.317, dirAcc=0.549, profit=0.9bps, win=0.549, conf=0.762
+2026-04-27 11:17:21,277 - __main__ - INFO - Epoch 11/30: Train Loss=0.5942, Acc=0.6904 | Val Loss=0.7840, Acc=0.5140 || [2-class] cov=0.449, dirAcc=0.534, profit=0.7bps, win=0.534, conf=0.785
+2026-04-27 11:17:21,277 - __main__ - INFO - Early stopping at epoch 11 (patience=10)
+2026-04-27 11:17:21,286 - __main__ - INFO - Loaded best model from early stopping
+2026-04-27 11:17:21,287 - __main__ - INFO - Two-class MLP finished: iters=11, final_loss=0.5942
+2026-04-27 11:17:21,559 - __main__ - INFO - Saved sklearn MLP loss curve: sk_mlp_loss_curve.csv, sk_mlp_loss_curve.png
+2026-04-27 11:17:21,563 - __main__ - INFO - Saved per-epoch metrics to epoch_metrics_two_class.csv
+2026-04-27 11:17:21,563 - __main__ - INFO - Optimizing confidence tau (cost=1.0 bps, select_by=profit, min_coverage=0.0)
+2026-04-27 11:17:21,595 - __main__ - INFO - Best by profit: tau=0.720, profit=16.98 bps, cov=0.074%, trades=3
+2026-04-27 11:17:21,595 - __main__ - INFO - Best by EV: tau=0.550, EV=0.35, cov=46.888%, profit=0.74
+2026-04-27 11:17:21,596 - __main__ - INFO - Chosen tau (profit): 0.720 | profit=16.98 bps, cov=0.074%, EV=0.01, trades=3
+2026-04-27 11:17:21,599 - __main__ - INFO - Optimized confidence tau: 0.720
+2026-04-27 11:17:21,648 - __main__ - INFO - Saved decision threshold config to /Users/ryanruehl/Desktop/ML Bot/artifacts/decision_threshold.json
+2026-04-27 11:17:21,649 - __main__ - INFO - Validation profit with tau=0.720: 16.98 bps (coverage: 0.1%)
+2026-04-27 11:17:21,686 - __main__ - INFO - Saved two-class model to /Users/ryanruehl/Desktop/ML Bot/artifacts
+2026-04-27 11:17:21,687 - __main__ - INFO - ============================================================
+2026-04-27 11:17:21,687 - __main__ - INFO - EVALUATION AND SAVING
+2026-04-27 11:17:21,687 - __main__ - INFO - ============================================================
+2026-04-27 11:17:21,688 - __main__ - INFO - Evaluating model performance...
+2026-04-27 11:17:21,688 - __main__ - INFO - ATR volatility channel gate (0.0 <= ATR_14 <= 100.0): 1 trades filtered out; 1 remain from 2 confidence-passing trades
+2026-04-27 11:17:21,727 - __main__ - INFO - ============================================================
+2026-04-27 11:17:21,727 - __main__ - INFO - CENTRALIZED TRAINING FINAL RESULTS
+2026-04-27 11:17:21,727 - __main__ - INFO - ============================================================
+2026-04-27 11:17:21,728 - __main__ - INFO - TEST METRICS:
+2026-04-27 11:17:21,728 - __main__ - INFO -   Direction Accuracy: 0.0000
+2026-04-27 11:17:21,728 - __main__ - INFO -   Coverage: 0.0003 (1/3377 samples)
+2026-04-27 11:17:21,728 - __main__ - INFO -   Avg Confidence: 0.7309
+2026-04-27 11:17:21,728 - __main__ - INFO -   Avg Profit: -7.22 bps
+2026-04-27 11:17:21,729 - __main__ - INFO -   Median Profit: -7.22 bps
+2026-04-27 11:17:21,729 - __main__ - INFO -   Win Rate: 0.000
+2026-04-27 11:17:21,729 - __main__ - INFO -   Sharpe Ratio: -722270967.161
+2026-04-27 11:17:21,729 - __main__ - INFO -   Profit Range: [-7.2, -7.2] bps
+2026-04-27 11:17:21,729 - __main__ - INFO -   Profit Percentiles:
+2026-04-27 11:17:21,729 - __main__ - INFO -     P10: -7.22 bps
+2026-04-27 11:17:21,730 - __main__ - INFO -     P25: -7.22 bps
+2026-04-27 11:17:21,730 - __main__ - INFO -     P75: -7.22 bps
+2026-04-27 11:17:21,730 - __main__ - INFO -     P90: -7.22 bps
+2026-04-27 11:17:21,730 - __main__ - INFO - ============================================================
+2026-04-27 11:17:21,859 - __main__ - INFO - Two-class artifacts saved to /Users/ryanruehl/Desktop/ML Bot/artifacts
+2026-04-27 11:17:21,859 - __main__ - INFO - Results saved successfully
+2026-04-27 11:17:21,859 - __main__ - INFO - Training pipeline completed successfully
+2026-04-27 11:17:23,273 - __main__ - INFO - Saved progress plots: loss_progress.png, acc_progress.png, val_coverage.png, val_dir_acc.png, val_profit.png, val_winrate.png, val_conf.png
+2026-04-27 11:17:23,313 - __main__ - INFO - ================================================================================
+2026-04-27 11:17:23,313 - __main__ - INFO - TRAINING COMPLETED SUCCESSFULLY
+2026-04-27 11:17:23,313 - __main__ - INFO - ================================================================================
+2026-04-27 11:17:23,313 - __main__ - INFO - Results saved to: /Users/ryanruehl/Desktop/ML Bot/artifacts
+2026-04-27 11:17:23,313 - __main__ - INFO - Key files:
+2026-04-27 11:17:23,314 - __main__ - INFO -   - Model: /Users/ryanruehl/Desktop/ML Bot/artifacts/model.pth (or model.joblib)
+2026-04-27 11:17:23,314 - __main__ - INFO -   - Two-class metrics: /Users/ryanruehl/Desktop/ML Bot/artifacts/metrics_two_class.json
+2026-04-27 11:17:23,314 - __main__ - INFO -   - Two-class model: /Users/ryanruehl/Desktop/ML Bot/artifacts/two_class_model.joblib
+2026-04-27 11:17:23,314 - __main__ - INFO -   - Decision threshold: /Users/ryanruehl/Desktop/ML Bot/artifacts/decision_threshold.json
+2026-04-27 11:17:23,314 - __main__ - INFO -   - Predictions: /Users/ryanruehl/Desktop/ML Bot/artifacts/test_predictions_two_class.csv
+2026-04-27 11:17:23,314 - __main__ - INFO -   - Config: /Users/ryanruehl/Desktop/ML Bot/artifacts/config.yaml
+2026-04-27 11:17:23,314 - __main__ - INFO -   - Logs: /Users/ryanruehl/Desktop/ML Bot/artifacts/logs.txt
+2026-04-27 11:17:23,314 - __main__ - INFO -   - Preprocessors: /Users/ryanruehl/Desktop/ML Bot/artifacts/imputer.joblib, /Users/ryanruehl/Desktop/ML Bot/artifacts/scaler.joblib
+2026-04-27 11:17:23,314 - __main__ - INFO - Final two-class test performance:
+2026-04-27 11:17:23,315 - __main__ - INFO -   Coverage: 0.0% (1 trades)
+2026-04-27 11:17:23,315 - __main__ - INFO -   Direction Accuracy: 0.0000
+2026-04-27 11:17:23,315 - __main__ - INFO -   Average Profit: -7.22 bps
+2026-04-27 11:17:23,316 - __main__ - INFO -   Win Rate: 0.0%
+2026-04-27 11:17:23,316 - __main__ - INFO - ================================================================================
+2026-04-27 11:17:23,316 - __main__ - INFO - Wrote /Users/ryanruehl/Desktop/ML Bot/artifacts/model_updated.flag — bot will hot-reload within 5 min
+2026-04-27 11:18:03,145 - __main__ - INFO - Logging to /Users/ryanruehl/Desktop/ML Bot/artifacts/logs.txt
+2026-04-27 11:18:03,145 - __main__ - INFO - Random seed set to 42
+2026-04-27 11:18:03,146 - __main__ - INFO - Starting centralized training pipeline
+2026-04-27 11:18:03,146 - __main__ - INFO - TWO-CLASS MODE ENABLED: Training binary direction classifier only
+2026-04-27 11:18:03,146 - __main__ - INFO - ============================================================
+2026-04-27 11:18:03,147 - __main__ - INFO - LOADING AND PREPARING DATA
+2026-04-27 11:18:03,147 - __main__ - INFO - ============================================================
+2026-04-27 11:18:03,147 - __main__ - INFO - Loading data from /Users/ryanruehl/Desktop/ML Bot/data/processed/btc_1min_processed.parquet
+2026-04-27 11:18:03,442 - __main__ - INFO - Loaded dataset: 31,433 rows, 366 columns
+2026-04-27 11:18:03,445 - __main__ - INFO - Symbols: 1
+2026-04-27 11:18:03,446 - __main__ - INFO - Date range: 2026-04-05 18:52:00+00:00 to 2026-04-27 14:59:00+00:00
+2026-04-27 11:18:03,520 - __main__ - INFO - Computed ATR_14 for 1 symbols (1 NaN rows, typically the first candle per symbol)
+2026-04-27 11:18:03,529 - __main__ - INFO - Creating classification targets: horizon=15min, deadband=3.0bps
+2026-04-27 11:18:03,553 - __main__ - INFO - Input memory usage: 92.2 MB
+2026-04-27 11:18:03,562 - __main__ - INFO - Data sorted by symbol and timestamp
+2026-04-27 11:18:03,564 - __main__ - INFO - Valid samples: 31,418 / 31,433 (100.0%)
+2026-04-27 11:18:03,842 - __main__ - INFO - Classification target distribution:
+2026-04-27 11:18:03,842 - __main__ - INFO -   Down: 12,686 (40.4%)
+2026-04-27 11:18:03,843 - __main__ - INFO -   Up: 13,416 (42.7%)
+2026-04-27 11:18:03,843 - __main__ - INFO -   No-trade: 5,316 (16.9%)
+2026-04-27 11:18:03,843 - __main__ - INFO - Binary target distribution (trade vs no-trade):
+2026-04-27 11:18:03,843 - __main__ - INFO -   No-trade: 5,316 (16.9%)
+2026-04-27 11:18:03,844 - __main__ - INFO -   Trade: 26,102 (83.1%)
+2026-04-27 11:18:03,844 - __main__ - INFO - Direction distribution (trade samples only):
+2026-04-27 11:18:03,845 - __main__ - INFO -   Down: 12,686 (48.6%)
+2026-04-27 11:18:03,846 - __main__ - INFO -   Up: 13,416 (51.4%)
+2026-04-27 11:18:03,866 - __main__ - INFO - Output memory usage: 92.8 MB
+2026-04-27 11:18:03,870 - __main__ - INFO - Class distribution (two_class mode):
+2026-04-27 11:18:03,870 - __main__ - INFO -   Down: 12,686 (48.6%)
+2026-04-27 11:18:03,870 - __main__ - INFO -   Up: 13,416 (51.4%)
+2026-04-27 11:18:03,871 - __main__ - INFO - Creating symbol-wise temporal splits: train=70.0%, val=15.0%, test=15.0%
+2026-04-27 11:18:03,879 - __main__ - INFO - Symbol-wise temporal split statistics:
+2026-04-27 11:18:03,907 - __main__ - INFO -   Train: 21,992 samples, 1 symbols, 65.0 MB
+2026-04-27 11:18:03,907 - __main__ - INFO -     Date range: 2026-04-05 18:52:00+00:00 to 2026-04-21 01:25:00+00:00
+2026-04-27 11:18:03,938 - __main__ - INFO -   Validation: 4,712 samples, 1 symbols, 13.9 MB
+2026-04-27 11:18:03,938 - __main__ - INFO -     Date range: 2026-04-21 01:26:00+00:00 to 2026-04-24 07:58:00+00:00
+2026-04-27 11:18:03,961 - __main__ - INFO -   Test: 4,714 samples, 1 symbols, 13.9 MB
+2026-04-27 11:18:03,962 - __main__ - INFO -     Date range: 2026-04-24 07:59:00+00:00 to 2026-04-27 14:44:00+00:00
+2026-04-27 11:18:03,963 - __main__ - INFO - Filtering for trade-only samples (two-class mode)
+2026-04-27 11:18:04,005 - __main__ - INFO - Trade-only filtering results:
+2026-04-27 11:18:04,005 - __main__ - INFO -   Train: 21,992 -> 18,692 (85.0%)
+2026-04-27 11:18:04,006 - __main__ - INFO -   Val: 4,712 -> 4,033 (85.6%)
+2026-04-27 11:18:04,006 - __main__ - INFO -   Test: 4,714 -> 3,377 (71.6%)
+2026-04-27 11:18:04,006 - __main__ - INFO - ============================================================
+2026-04-27 11:18:04,007 - __main__ - INFO - FEATURE PROCESSING
+2026-04-27 11:18:04,007 - __main__ - INFO - ============================================================
+2026-04-27 11:18:04,816 - __main__ - INFO - Selecting top 128 features using mutual_info
+2026-04-27 11:18:33,591 - __main__ - INFO - mutual_info selection done in 28.8s on sample 18,692 rows, picked 128 features
+2026-04-27 11:18:33,591 - __main__ - INFO - Selected 128 features
+2026-04-27 11:18:33,592 - __main__ - INFO -   price: 109 features
+2026-04-27 11:18:33,592 - __main__ - INFO -   returns: 2 features
+2026-04-27 11:18:33,592 - __main__ - INFO -   spread: 5 features
+2026-04-27 11:18:33,592 - __main__ - INFO -   imbalance: 33 features
+2026-04-27 11:18:33,592 - __main__ - INFO -   technical: 9 features
+2026-04-27 11:18:33,592 - __main__ - INFO -   other: 6 features
+2026-04-27 11:18:33,649 - __main__ - INFO - Feature matrix shapes:
+2026-04-27 11:18:33,649 - __main__ - INFO -   Train: (18692, 128)
+2026-04-27 11:18:33,649 - __main__ - INFO -   Val: (4033, 128)
+2026-04-27 11:18:33,649 - __main__ - INFO -   Test: (3377, 128)
+2026-04-27 11:18:33,649 - __main__ - INFO - Fitting preprocessors on training data
+2026-04-27 11:18:33,649 - __main__ - INFO - Using imputer strategy: mean
+2026-04-27 11:18:33,762 - __main__ - INFO - Fitting StandardScaler
+2026-04-27 11:18:33,796 - __main__ - INFO - Scaler fitted: center range [-0.072, 73053.138]
+2026-04-27 11:18:33,796 - __main__ - INFO - Scale range: [0.000, 2455.115]
+2026-04-27 11:18:33,940 - __main__ - INFO - Saved preprocessors to /Users/ryanruehl/Desktop/ML Bot/artifacts
+2026-04-27 11:18:33,941 - __main__ - INFO - Final feature shapes: Train (18692, 128), Val (4033, 128), Test (3377, 128)
+2026-04-27 11:18:33,941 - __main__ - INFO - Target mode: direction (0/1)
+2026-04-27 11:18:33,943 - __main__ - INFO - ============================================================
+2026-04-27 11:18:33,944 - __main__ - INFO - MODEL TRAINING
+2026-04-27 11:18:33,944 - __main__ - INFO - ============================================================
+2026-04-27 11:18:33,944 - __main__ - INFO - Training MLP model with architecture: [256, 128, 64]
+2026-04-27 11:18:33,951 - __main__ - INFO - Using two-class mode: binary direction classifier (Up vs Down)
+2026-04-27 11:18:33,952 - __main__ - INFO - Direction distribution: Down=9070, Up=9622
+2026-04-27 11:18:33,953 - __main__ - INFO - Class balance: 0.515 Up ratio
+2026-04-27 11:18:33,966 - __main__ - INFO - Sample weights: mean=1.0000, std=0.0295
+2026-04-27 11:18:34,492 - __main__ - INFO - Training two-class MLP for 30 epochs...
+2026-04-27 11:18:35,637 - __main__ - INFO - Epoch 1/30: Train Loss=0.6902, Acc=0.5332 | Val Loss=0.6942, Acc=0.5259 || [2-class] cov=0.469, dirAcc=0.534, profit=0.7bps, win=0.534, conf=0.589
+2026-04-27 11:18:37,509 - __main__ - INFO - Epoch 2/30: Train Loss=0.6840, Acc=0.5533 | Val Loss=0.6947, Acc=0.5274 || [2-class] cov=0.524, dirAcc=0.531, profit=0.5bps, win=0.531, conf=0.592
+2026-04-27 11:18:39,557 - __main__ - INFO - Epoch 3/30: Train Loss=0.6785, Acc=0.5674 | Val Loss=0.6968, Acc=0.5242 || [2-class] cov=0.592, dirAcc=0.533, profit=0.6bps, win=0.533, conf=0.599
+2026-04-27 11:18:42,145 - __main__ - INFO - Epoch 4/30: Train Loss=0.6729, Acc=0.5792 | Val Loss=0.6995, Acc=0.5207 || [2-class] cov=0.653, dirAcc=0.529, profit=0.4bps, win=0.529, conf=0.606
+2026-04-27 11:18:45,259 - __main__ - INFO - Epoch 5/30: Train Loss=0.6677, Acc=0.5862 | Val Loss=0.7072, Acc=0.5115 || [2-class] cov=0.738, dirAcc=0.523, profit=0.1bps, win=0.523, conf=0.620
+2026-04-27 11:18:50,445 - __main__ - INFO - Epoch 6/30: Train Loss=0.6610, Acc=0.5993 | Val Loss=0.7111, Acc=0.5120 || [2-class] cov=0.761, dirAcc=0.518, profit=-0.1bps, win=0.518, conf=0.629
+2026-04-27 11:18:55,082 - __main__ - INFO - Epoch 7/30: Train Loss=0.6531, Acc=0.6151 | Val Loss=0.7153, Acc=0.5113 || [2-class] cov=0.780, dirAcc=0.520, profit=-0.0bps, win=0.520, conf=0.637
+2026-04-27 11:19:00,144 - __main__ - INFO - Epoch 8/30: Train Loss=0.6436, Acc=0.6294 | Val Loss=0.7243, Acc=0.5148 || [2-class] cov=0.809, dirAcc=0.519, profit=-0.0bps, win=0.519, conf=0.651
+2026-04-27 11:19:05,161 - __main__ - INFO - Epoch 9/30: Train Loss=0.6311, Acc=0.6457 | Val Loss=0.7283, Acc=0.5170 || [2-class] cov=0.802, dirAcc=0.523, profit=0.0bps, win=0.523, conf=0.661
+2026-04-27 11:19:11,207 - __main__ - INFO - Epoch 10/30: Train Loss=0.6152, Acc=0.6647 | Val Loss=0.7438, Acc=0.5177 || [2-class] cov=0.830, dirAcc=0.521, profit=0.1bps, win=0.521, conf=0.677
+2026-04-27 11:19:17,843 - __main__ - INFO - Epoch 11/30: Train Loss=0.5942, Acc=0.6904 | Val Loss=0.7840, Acc=0.5140 || [2-class] cov=0.869, dirAcc=0.515, profit=-0.3bps, win=0.515, conf=0.709
+2026-04-27 11:19:17,843 - __main__ - INFO - Early stopping at epoch 11 (patience=10)
+2026-04-27 11:19:17,849 - __main__ - INFO - Loaded best model from early stopping
+2026-04-27 11:19:17,849 - __main__ - INFO - Two-class MLP finished: iters=11, final_loss=0.5942
+2026-04-27 11:19:18,238 - __main__ - INFO - Saved sklearn MLP loss curve: sk_mlp_loss_curve.csv, sk_mlp_loss_curve.png
+2026-04-27 11:19:18,242 - __main__ - INFO - Saved per-epoch metrics to epoch_metrics_two_class.csv
+2026-04-27 11:19:18,243 - __main__ - INFO - Using provided confidence tau: 0.550
+2026-04-27 11:19:18,363 - __main__ - INFO - Saved decision threshold config to /Users/ryanruehl/Desktop/ML Bot/artifacts/decision_threshold.json
+2026-04-27 11:19:18,366 - __main__ - INFO - Validation profit with tau=0.550: 0.74 bps (coverage: 46.9%)
+2026-04-27 11:19:18,473 - __main__ - INFO - Saved two-class model to /Users/ryanruehl/Desktop/ML Bot/artifacts
+2026-04-27 11:19:18,474 - __main__ - INFO - ============================================================
+2026-04-27 11:19:18,474 - __main__ - INFO - EVALUATION AND SAVING
+2026-04-27 11:19:18,474 - __main__ - INFO - ============================================================
+2026-04-27 11:19:18,474 - __main__ - INFO - Evaluating model performance...
+2026-04-27 11:19:18,482 - __main__ - INFO - ATR volatility channel gate (0.0 <= ATR_14 <= 100.0): 35 trades filtered out; 1637 remain from 1672 confidence-passing trades
+2026-04-27 11:19:18,567 - __main__ - INFO - ============================================================
+2026-04-27 11:19:18,567 - __main__ - INFO - CENTRALIZED TRAINING FINAL RESULTS
+2026-04-27 11:19:18,568 - __main__ - INFO - ============================================================
+2026-04-27 11:19:18,568 - __main__ - INFO - TEST METRICS:
+2026-04-27 11:19:18,568 - __main__ - INFO -   Direction Accuracy: 0.5241
+2026-04-27 11:19:18,568 - __main__ - INFO -   Coverage: 0.4847 (1637/3377 samples)
+2026-04-27 11:19:18,569 - __main__ - INFO -   Avg Confidence: 0.5878
+2026-04-27 11:19:18,569 - __main__ - INFO -   Avg Profit: -0.41 bps
+2026-04-27 11:19:18,569 - __main__ - INFO -   Median Profit: 2.41 bps
+2026-04-27 11:19:18,569 - __main__ - INFO -   Win Rate: 0.524
+2026-04-27 11:19:18,569 - __main__ - INFO -   Sharpe Ratio: -0.022
+2026-04-27 11:19:18,570 - __main__ - INFO -   Profit Range: [-106.3, 105.9] bps
+2026-04-27 11:19:18,570 - __main__ - INFO -   Profit Percentiles:
+2026-04-27 11:19:18,570 - __main__ - INFO -     P10: -16.81 bps
+2026-04-27 11:19:18,570 - __main__ - INFO -     P25: -9.24 bps
+2026-04-27 11:19:18,570 - __main__ - INFO -     P75: 7.77 bps
+2026-04-27 11:19:18,571 - __main__ - INFO -     P90: 17.40 bps
+2026-04-27 11:19:18,571 - __main__ - INFO - ============================================================
+2026-04-27 11:19:18,752 - __main__ - INFO - Two-class artifacts saved to /Users/ryanruehl/Desktop/ML Bot/artifacts
+2026-04-27 11:19:18,753 - __main__ - INFO - Results saved successfully
+2026-04-27 11:19:18,753 - __main__ - INFO - Training pipeline completed successfully
+2026-04-27 11:19:20,928 - __main__ - INFO - Saved progress plots: loss_progress.png, acc_progress.png, val_coverage.png, val_dir_acc.png, val_profit.png, val_winrate.png, val_conf.png
+2026-04-27 11:19:20,978 - __main__ - INFO - ================================================================================
+2026-04-27 11:19:20,978 - __main__ - INFO - TRAINING COMPLETED SUCCESSFULLY
+2026-04-27 11:19:20,978 - __main__ - INFO - ================================================================================
+2026-04-27 11:19:20,978 - __main__ - INFO - Results saved to: /Users/ryanruehl/Desktop/ML Bot/artifacts
+2026-04-27 11:19:20,978 - __main__ - INFO - Key files:
+2026-04-27 11:19:20,978 - __main__ - INFO -   - Model: /Users/ryanruehl/Desktop/ML Bot/artifacts/model.pth (or model.joblib)
+2026-04-27 11:19:20,978 - __main__ - INFO -   - Two-class metrics: /Users/ryanruehl/Desktop/ML Bot/artifacts/metrics_two_class.json
+2026-04-27 11:19:20,978 - __main__ - INFO -   - Two-class model: /Users/ryanruehl/Desktop/ML Bot/artifacts/two_class_model.joblib
+2026-04-27 11:19:20,979 - __main__ - INFO -   - Decision threshold: /Users/ryanruehl/Desktop/ML Bot/artifacts/decision_threshold.json
+2026-04-27 11:19:20,979 - __main__ - INFO -   - Predictions: /Users/ryanruehl/Desktop/ML Bot/artifacts/test_predictions_two_class.csv
+2026-04-27 11:19:20,979 - __main__ - INFO -   - Config: /Users/ryanruehl/Desktop/ML Bot/artifacts/config.yaml
+2026-04-27 11:19:20,980 - __main__ - INFO -   - Logs: /Users/ryanruehl/Desktop/ML Bot/artifacts/logs.txt
+2026-04-27 11:19:20,980 - __main__ - INFO -   - Preprocessors: /Users/ryanruehl/Desktop/ML Bot/artifacts/imputer.joblib, /Users/ryanruehl/Desktop/ML Bot/artifacts/scaler.joblib
+2026-04-27 11:19:20,980 - __main__ - INFO - Final two-class test performance:
+2026-04-27 11:19:20,981 - __main__ - INFO -   Coverage: 48.5% (1637 trades)
+2026-04-27 11:19:20,981 - __main__ - INFO -   Direction Accuracy: 0.5241
+2026-04-27 11:19:20,981 - __main__ - INFO -   Average Profit: -0.41 bps
+2026-04-27 11:19:20,981 - __main__ - INFO -   Win Rate: 52.4%
+2026-04-27 11:19:20,981 - __main__ - INFO - ================================================================================
+2026-04-27 11:19:20,984 - __main__ - INFO - Wrote /Users/ryanruehl/Desktop/ML Bot/artifacts/model_updated.flag — bot will hot-reload within 5 min

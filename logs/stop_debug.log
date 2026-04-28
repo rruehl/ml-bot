@@ -1,0 +1,4 @@
+2026-04-28 09:36:40.995  INFO     FILL POLL  order_id=05d39e61-a425-4267-87ae-6f0555ff9615  fill_count=0.00  filled=False
+2026-04-28 09:36:42.091  INFO     FILL POLL  order_id=ae839ea9-50a7-41bc-bcc3-1ec7ecee66c2  fill_count=0.00  filled=False
+2026-04-28 09:36:43.424  INFO     FILL POLL  order_id=00c1f314-7f40-403a-a974-71174c596561  fill_count=0.00  filled=False
+2026-04-28 09:36:44.531  INFO     FILL POLL  order_id=84b195f6-7095-4ec1-b869-bdf6ab4f15a1  fill_count=1.00  filled=True
