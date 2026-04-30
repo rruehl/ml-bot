@@ -1,5 +1,5 @@
 {
-    "PAPER_MODE": false,
+    "PAPER_MODE": true,
     "PAPER_START_BALANCE": 1000.0,
     "MAX_DAILY_LOSS": 1000000,
     "STARTING_DEPOSIT": 4.99,

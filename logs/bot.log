@@ -1154,3 +1154,9 @@
 2026-04-29 17:43:42  INFO     [drift_monitor]  Only 5 trade outcomes recorded — need 50 before drift evaluation begins
 2026-04-29 17:48:42  INFO     [drift_monitor]  Only 5 trade outcomes recorded — need 50 before drift evaluation begins
 2026-04-29 17:53:42  INFO     [drift_monitor]  Only 5 trade outcomes recorded — need 50 before drift evaluation begins
+2026-04-30 13:26:42  INFO     [drift_monitor]  Drift monitor started  window=50  threshold=0.53  cooldown=12h  interval=300s
+2026-04-30 13:27:41  INFO     [drift_monitor]  Drift monitor started  window=50  threshold=0.53  cooldown=12h  interval=300s
+2026-04-30 13:30:45  INFO     [drift_monitor]  Drift monitor started  window=50  threshold=0.53  cooldown=12h  interval=300s
+2026-04-30 13:30:56,501 ERROR [kalshi_bot_v8] ML inference error: single positional indexer is out-of-bounds
+2026-04-30 13:30:59,555 ERROR [kalshi_bot_v8] ML inference error: single positional indexer is out-of-bounds
+2026-04-30 13:41:30  INFO     [drift_monitor]  Drift monitor started  window=50  threshold=0.53  cooldown=12h  interval=300s

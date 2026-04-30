@@ -2471,6 +2471,59 @@ class BTCMinuteProcessor(BaseDataProcessor):
         df['session_europe'] = ((ts.dt.hour >= 7)  & (ts.dt.hour < 16)).astype(float)
         df['session_us']     = ((ts.dt.hour >= 13) & (ts.dt.hour < 21)).astype(float)
 
+        # ── Bybit perpetual futures features ──────────────────────────────
+        _spot_mid_open  = (
+            (df['best_bid_open'] + df['best_ask_open']) / 2.0
+        ).replace(0, np.nan)
+        _spot_mid_close = df['mid_price'].replace(0, np.nan)
+
+        # Basis: (spot_mid - futures_mark) / spot_mid
+        # Positive = perp trading at discount to spot (unusual, bullish)
+        # Negative = perp at premium (contango, bearish mean-reversion pressure)
+        df['bybit_basis_open']  = (_spot_mid_open  - df['bybit_mark_open'])  / _spot_mid_open
+        df['bybit_basis_close'] = (_spot_mid_close - df['bybit_mark_close']) / _spot_mid_close
+        df['bybit_basis_delta'] = df['bybit_basis_close'] - df['bybit_basis_open']
+        df['bybit_basis_ma_15'] = df['bybit_basis_close'].shift(1).rolling(15).mean()
+
+        # Funding rate: positive = longs pay shorts (crowded long, mean-reversion pressure)
+        df['bybit_funding_ma_15'] = df['bybit_funding_rate'].shift(1).rolling(15).mean()
+
+        # Open interest: delta reveals new capital entering vs. existing positions unwinding
+        df['bybit_oi_delta_1'] = df['bybit_oi'].diff(1)
+        df['bybit_oi_delta_5'] = df['bybit_oi'].diff(5)
+
+        # Futures order book imbalances: passthroughs (already [-1,1]) + intra-bar delta
+        # bybit_imbal_l1/l5/l10/slope _open/_close columns pass through directly
+        df['bybit_imbal_delta'] = df['bybit_imbal_l10_close'] - df['bybit_imbal_l10_open']
+
+        # Futures CVD: mirrors spot taker flow features; futures takers often lead spot
+        _fv_total = (df['bybit_buy_volume'] + df['bybit_sell_volume']).replace(0, np.nan)
+        df['bybit_taker_buy_ratio']       = df['bybit_buy_volume'] / _fv_total
+        df['bybit_taker_buy_ratio_ma_15'] = df['bybit_taker_buy_ratio'].shift(1).rolling(15).mean()
+        df['bybit_cvd_delta_1']           = df['bybit_cvd'].diff(1)
+        df['bybit_cvd_delta_5']           = df['bybit_cvd'].diff(5)
+        df['bybit_cvd_ma_15']             = df['bybit_cvd'].shift(1).rolling(15).mean()
+        df['bybit_cvd_vs_ma_15']          = df['bybit_cvd'] - df['bybit_cvd_ma_15']
+
+        # Liquidations: cascades are directional accelerators; long liq = bearish
+        df['bybit_liq_net']   = df['bybit_liq_long_vol'] - df['bybit_liq_short_vol']
+        df['bybit_liq_total'] = df['bybit_liq_long_vol'] + df['bybit_liq_short_vol']
+
+        # Futures bar range: normalized futures volatility; divergence from spot is predictive
+        _spot_range = (df['high'] - df['low']) / df['close'].replace(0, np.nan)
+        df['bybit_bar_range']     = (
+            (df['bybit_bar_high'] - df['bybit_bar_low']) / _spot_mid_close
+        )
+        df['bybit_range_vs_spot'] = df['bybit_bar_range'] / _spot_range.replace(0, np.nan)
+
+        # 1-hour futures momentum: deviation from the hour-ago mark price
+        df['bybit_1h_momentum'] = (
+            (df['bybit_mark_close'] - df['bybit_prev_price_1h'])
+            / df['bybit_prev_price_1h'].replace(0, np.nan)
+        )
+
+        # bybit_next_funding_min and bybit_futures_spread_bps are direct passthroughs
+
         logger.info(
             "Feature engineering complete: %d rows, %d columns",
             len(df), df.shape[1],

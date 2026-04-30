@@ -1779,6 +1779,16 @@ class StrategyController:
                 processor = BTCMinuteProcessor(csv_path=csv_path, config=proc_config)
                 processor.data = raw_df  # bypass load_data() / clean_data()
                 feat_df_full = processor.engineer_features()
+
+                # If the schema contains features not in the current CSV (e.g. Bybit
+                # columns during a transition period), fill with NaN so the imputer
+                # can substitute training means rather than crashing on KeyError.
+                missing = [f for f in ML.features if f not in feat_df_full.columns]
+                if missing:
+                    log.warning("[ML] %d schema features missing from CSV — imputer filling", len(missing))
+                    for mf in missing:
+                        feat_df_full[mf] = float("nan")
+
                 feat_row = feat_df_full.iloc[[-1]][ML.features]
 
                 direction, confidence, proba_up = ML.predict(feat_row)
