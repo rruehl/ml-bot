@@ -22,7 +22,7 @@ env/
 .venv/
 
 # Data files (large CSVs / parquet)
-data/
+
 
 
 # macOS

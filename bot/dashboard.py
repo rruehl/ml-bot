@@ -257,6 +257,16 @@ HTML_TEMPLATE = """
             Gross cost: <span class="red">${{ "{:.2f}".format(gross_cost_total) }}</span><br>
             Net fees: <span class="red">${{ "{:.2f}".format(total_fees) }}</span>
         </div>
+        {% if not is_paper %}
+        <div class="sub" style="margin-top:4px;border-top:1px solid var(--border);padding-top:4px;">
+            Expected balance: <span class="blue">${{ "{:.2f}".format(expected_balance) }}</span>
+            &nbsp;·&nbsp;
+            <span class="{{ 'green' if (balance_delta | abs) < 0.05 else 'orange' if (balance_delta | abs) < 0.50 else 'red' }}">
+                Δ${{ "{:+.2f}".format(balance_delta) }}
+            </span>
+            <span style="font-size:.65rem;color:var(--muted);"> (deposit + P&amp;L vs live)</span>
+        </div>
+        {% endif %}
     </div>
 </div>
 
@@ -318,11 +328,12 @@ HTML_TEMPLATE = """
     <table>
         <thead>
             <tr>
-                <th style="width:16%;">Time</th>
-                <th style="width:14%;">Prediction</th>
-                <th style="width:18%;">Conf / τ</th>
-                <th style="width:24%;">Status</th>
-                <th>Outcome</th>
+                <th style="width:13%;">Time</th>
+                <th style="width:11%;">Pred</th>
+                <th style="width:16%;">Conf / τ</th>
+                <th style="width:22%;">Status / Reason</th>
+                <th style="width:16%;">Outcome</th>
+                <th>W/L</th>
             </tr>
         </thead>
         <tbody>
@@ -345,8 +356,15 @@ HTML_TEMPLATE = """
                     <span class="green">✓ traded</span>
                     {% elif row.status == 'tau_gate_fail' %}
                     <span class="red">τ gate fail</span>
+                    {% elif row.status == 'filtered' %}
+                    <span class="orange" title="{{ row.filter_reason }}">filtered</span>
+                    {% if row.filter_reason %}
+                    <span style="color:var(--muted);font-size:.65rem;display:block;word-break:break-all;">{{ row.filter_reason[:30] }}{% if row.filter_reason|length > 30 %}…{% endif %}</span>
+                    {% endif %}
+                    {% elif row.status == 'no_fill' %}
+                    <span style="color:var(--muted);">no fill</span>
                     {% else %}
-                    <span class="orange">filtered</span>
+                    <span style="color:var(--muted);">–</span>
                     {% endif %}
                 </td>
                 <td>
@@ -360,10 +378,21 @@ HTML_TEMPLATE = """
                     <span style="color:var(--muted);">–</span>
                     {% endif %}
                 </td>
+                <td>
+                    {% if row.win_loss == 'win' %}
+                    <span class="green">W</span>
+                    {% elif row.win_loss == 'loss' %}
+                    <span class="red">L</span>
+                    {% elif row.win_loss == 'scratch' %}
+                    <span class="yellow">S</span>
+                    {% else %}
+                    <span style="color:var(--muted);">–</span>
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
             {% if not inference_history %}
-            <tr><td colspan="5" style="text-align:center;padding:12px;color:var(--muted);">No ML inferences yet</td></tr>
+            <tr><td colspan="6" style="text-align:center;padding:12px;color:var(--muted);">No ML inferences yet</td></tr>
             {% endif %}
         </tbody>
     </table>
@@ -1072,7 +1101,11 @@ def get_data():
         gross_cost_total     = settled["gross_cost"].apply(safe_float).sum()     if "gross_cost"     in settled.columns else 0.0
         total_fees           = settled["net_fees"].apply(safe_float).sum()       if "net_fees"       in settled.columns else 0.0
 
-        roi = ((live_balance - starting_deposit) / starting_deposit * 100) if starting_deposit > 0 else 0.0
+        if str(last.get("mode", "PAPER")) == "PAPER":
+            _paper_start = safe_float(cfg.get("PAPER_START_BALANCE", 1000.0))
+            roi = ((live_balance - _paper_start) / _paper_start * 100) if _paper_start > 0 else 0.0
+        else:
+            roi = ((live_balance - starting_deposit) / starting_deposit * 100) if starting_deposit > 0 else 0.0
 
         # ── PnL chart — anchor start to bot's first log entry ─────────────────────
         first_ts         = df["timestamp"].iloc[0]
@@ -1085,14 +1118,12 @@ def get_data():
         chart_data       = [0.0] + chart_data
         chart_timestamps = [first_ts.strftime("%Y-%m-%dT%H:%M:%SZ")] + chart_timestamps
 
-        # ── Win / loss — one count per closed trade ────────────────────────────────
-        wins   = len(df[df["event"] == "PAYOUT"])
-        losses = (
-            len(df[df["event"] == "SETTLE"]) +
-            len(df[df["event"] == "STOP_CONFIRMED"]) +
-            len(df[df["event"] == "STOP_FAILED_EXPIRY"]) +
-            len(df[(df["event"] == "STOP_EXIT") & (df["mode"] == "PAPER")])
-        )
+        # ── Win / loss — PnL-based so profitable stop-exits count as wins ─────────
+        if not settled.empty and "pnl_float" in settled.columns:
+            wins         = int((settled["pnl_float"] > 0).sum())
+            losses       = int((settled["pnl_float"] <= 0).sum())
+        else:
+            wins = losses = 0
         total_trades = wins + losses
         win_rate     = (wins / total_trades * 100) if total_trades > 0 else 0.0
 
@@ -1247,19 +1278,60 @@ def get_data():
         btc_price = safe_float(last.get("btc_price", 0))
 
         # ── Active position/order detection ────────────────────────────────────────
-        # Close events: STOP_CONFIRMED (not STOP_EXIT) to avoid flicker.
-        # Paper mode: STOP_EXIT is the close event since no STOP_CONFIRMED is written.
-        closed_events   = ["PAYOUT", "SETTLE", "STOP_CONFIRMED", "STOP_FAILED_EXPIRY", "ORDER_UNFILLED"]
-        last_closed_ts  = df[df["event"].isin(closed_events)]["timestamp"].max() if not df.empty else pd.NaT
-        paper_stop_ts   = df[(df["event"] == "STOP_EXIT") & (df["mode"] == "PAPER")]["timestamp"].max() if not df.empty else pd.NaT
-        if pd.notna(paper_stop_ts) and (pd.isna(last_closed_ts) or paper_stop_ts > last_closed_ts):
-            last_closed_ts = paper_stop_ts
+        # Active position / order detection — ticker-scoped to avoid cross-session
+        # false negatives (e.g. PAYOUT for session N fires ~90 s after session end,
+        # but a new FILL_CONFIRMED for session N+1 may already exist with an earlier
+        # timestamp, making a global max comparison flip has_active_position to False).
+        closed_events = ["PAYOUT", "SETTLE", "STOP_CONFIRMED", "STOP_FAILED_EXPIRY", "ORDER_UNFILLED"]
+        has_active_position = False
+        has_active_order    = False
 
-        last_opened_ts  = df[df["event"].isin(["FILL_CONFIRMED", "PAPER_BUY"])]["timestamp"].max() if not df.empty else pd.NaT
-        last_resting_ts = df[df["event"] == "ORDER_RESTING"]["timestamp"].max() if not df.empty else pd.NaT
+        fill_rows_all = df[df["event"].isin(["FILL_CONFIRMED", "PAPER_BUY"])].copy()
+        if not fill_rows_all.empty:
+            last_fill       = fill_rows_all.iloc[-1]
+            last_fill_ts    = last_fill["timestamp"]
+            last_fill_ticker = str(last_fill.get("ticker", ""))
+            # Any close event for this exact ticker AFTER this fill?
+            close_after = df[
+                df["event"].isin(closed_events) &
+                (df["ticker"] == last_fill_ticker) &
+                (df["timestamp"] > last_fill_ts)
+            ]
+            paper_stop_after = df[
+                (df["event"] == "STOP_EXIT") &
+                (df["mode"] == "PAPER") &
+                (df["ticker"] == last_fill_ticker) &
+                (df["timestamp"] > last_fill_ts)
+            ]
+            has_active_position = close_after.empty and paper_stop_after.empty
 
-        has_active_position = pd.notna(last_opened_ts) and (pd.isna(last_closed_ts) or last_opened_ts > last_closed_ts)
-        has_active_order    = (not has_active_position) and pd.notna(last_resting_ts) and (pd.isna(last_closed_ts) or last_resting_ts > last_closed_ts)
+        if not has_active_position:
+            order_resting_rows = df[df["event"] == "ORDER_RESTING"]
+            if not order_resting_rows.empty:
+                last_order       = order_resting_rows.iloc[-1]
+                last_order_ts    = last_order["timestamp"]
+                last_order_ticker = str(last_order.get("ticker", ""))
+                close_after_order = df[
+                    df["event"].isin(closed_events) &
+                    (df["ticker"] == last_order_ticker) &
+                    (df["timestamp"] > last_order_ts)
+                ]
+                paper_stop_after_order = df[
+                    (df["event"] == "STOP_EXIT") &
+                    (df["mode"] == "PAPER") &
+                    (df["ticker"] == last_order_ticker) &
+                    (df["timestamp"] > last_order_ts)
+                ]
+                fills_after_order = df[
+                    df["event"].isin(["FILL_CONFIRMED", "PAPER_BUY"]) &
+                    (df["ticker"] == last_order_ticker) &
+                    (df["timestamp"] > last_order_ts)
+                ]
+                has_active_order = (
+                    close_after_order.empty and
+                    paper_stop_after_order.empty and
+                    fills_after_order.empty
+                )
 
         stop_trail = stop_best_bid = stop_active = stop_level = 0
         if "stop_trail" in df.columns:
@@ -1272,8 +1344,8 @@ def get_data():
                 stop_level    = max(stop_best_bid - stop_trail, safe_int(cfg.get("STOP_FLOOR_CENTS", 15)))
 
         pos_ticker = pos_side = pos_entry = pos_qty = pos_fill_price = pos_fill_qty = pos_cost = pos_fees = ""
-        if has_active_position and not fill_rows.empty:
-            lf             = fill_rows.iloc[-1]
+        if has_active_position and not fill_rows_all.empty:
+            lf             = fill_rows_all.iloc[-1]
             pos_ticker     = str(lf.get("ticker", ""))
             pos_side       = str(lf.get("side", ""))
             pos_entry      = str(safe_int(lf.get("entry_price", 0)))
@@ -1339,17 +1411,31 @@ def get_data():
         infer_rows   = df[df["event"] == "ML_INFERENCE"].tail(10)
         fill_events  = df[df["event"].isin(["FILL_CONFIRMED", "PAPER_BUY"])]
 
-        settle_events = df[df["event"] == "SETTLE_VERIFIED"]
-        settle_by_ticker = {}
-        for _, sv in settle_events.iterrows():
+        # Build a per-ticker settlement map.
+        # SETTLE_VERIFIED = no-position sessions (provides explicit YES/NO text).
+        # PAYOUT/SETTLE   = sessions with a position (derive YES/NO from position side).
+        settle_by_ticker: dict[str, str] = {}
+        for _, sv in df[df["event"].isin(["SETTLE_VERIFIED", "PAYOUT", "SETTLE"])].iterrows():
             sv_ticker = str(sv.get("ticker", ""))
-            # SETTLE_VERIFIED rows omit stop_active, shifting columns left by one;
-            # the settlement text ends up in reconcile_delta instead of msg.
-            sv_text = " ".join(str(sv.get(col, "")) for col in ("msg", "reconcile_delta"))
-            if "Market settled YES" in sv_text:
-                settle_by_ticker[sv_ticker] = "YES"
-            elif "Market settled NO" in sv_text:
-                settle_by_ticker[sv_ticker] = "NO"
+            sv_event  = str(sv.get("event", ""))
+            if sv_event == "SETTLE_VERIFIED":
+                sv_text = " ".join(str(sv.get(col, "")) for col in ("msg", "reconcile_delta"))
+                if "Market settled YES" in sv_text:
+                    settle_by_ticker[sv_ticker] = "YES"
+                elif "Market settled NO" in sv_text:
+                    settle_by_ticker[sv_ticker] = "NO"
+            elif sv_event == "PAYOUT":
+                sv_side = str(sv.get("side", ""))
+                if sv_side == "yes":
+                    settle_by_ticker[sv_ticker] = "YES"
+                elif sv_side == "no":
+                    settle_by_ticker[sv_ticker] = "NO"
+            elif sv_event == "SETTLE":
+                sv_side = str(sv.get("side", ""))
+                if sv_side == "yes":
+                    settle_by_ticker[sv_ticker] = "NO"
+                elif sv_side == "no":
+                    settle_by_ticker[sv_ticker] = "YES"
 
         inference_history = []
         for _, ir in infer_rows.iloc[::-1].iterrows():
@@ -1366,17 +1452,23 @@ def get_data():
             # was misaligned (e.g. a Unix timestamp or signal_age_min landed there).
             row_tau = safe_float(ir.get("ml_tau", 0.0))
             effective_tau = row_tau if 0 < row_tau <= 1.0 else ml_tau
-            if iconf < effective_tau:
-                status = "tau_gate_fail"
-            else:
-                window_end      = ir["timestamp"] + pd.Timedelta(minutes=6)
-                following_fills = fill_events[
-                    (fill_events["timestamp"] > ir["timestamp"]) &
-                    (fill_events["timestamp"] <= window_end)
-                ]
-                status = "success" if not following_fills.empty else "filtered"
 
             ir_ticker  = str(ir.get("ticker", ""))
+            logged_filter_reason = str(ir.get("filter_reason", "") or "").strip()
+
+            if iconf < effective_tau:
+                status = "tau_gate_fail"
+            elif logged_filter_reason:
+                # Another gate (ATR, spread, moneyness, etc.) blocked the trade.
+                status = "filtered"
+            else:
+                # Gates passed — check if a fill actually happened on this ticker
+                # after inference (ticker-scoped, not a 6-minute window).
+                following_fills = fill_events[
+                    (fill_events["ticker"] == ir_ticker) &
+                    (fill_events["timestamp"] > ir["timestamp"])
+                ]
+                status = "success" if not following_fills.empty else "no_fill"
             settlement = settle_by_ticker.get(ir_ticker)
             if idir is None:
                 outcome = "--"
@@ -1387,25 +1479,40 @@ def get_data():
             else:
                 outcome = "wrong"
 
+            # Win/Loss for this inference: look up PnL for a settled row on the same ticker.
+            settled_for_ticker = settled[settled["ticker"] == ir_ticker] if not settled.empty else pd.DataFrame()
+            if not settled_for_ticker.empty:
+                pnl_val = safe_float(settled_for_ticker.iloc[-1].get("pnl_float", 0.0))
+                win_loss = "win" if pnl_val > 0 else "loss" if pnl_val < 0 else "scratch"
+            else:
+                win_loss = "--"
+
             inference_history.append({
                 "time":          ir["timestamp"].astimezone(central).strftime("%H:%M:%S"),
                 "direction":     dir_str,
                 "confidence":    round(iconf * 100, 1),
                 "effective_tau": round(effective_tau * 100, 1),
                 "status":        status,
+                "filter_reason": logged_filter_reason,
                 "outcome":       outcome,
+                "win_loss":      win_loss,
             })
 
         config_sections = build_config_sections(cfg)
         last_ct         = last["timestamp"].astimezone(central)
 
+        is_paper         = (mode_str == "PAPER")
+        expected_balance = starting_deposit + realized_pnl
+        balance_delta    = live_balance - expected_balance
+
         return dict(
             last_update=last_ct.strftime("%H:%M:%S"),
             is_active=is_active, ob_stale=ob_stale, ob_delta_age=round(ob_delta_age),
-            ws_connected=ws_connected, mode=mode_str,
+            ws_connected=ws_connected, mode=mode_str, is_paper=is_paper,
             live_balance=live_balance, balance_from_api=balance_from_api,
             starting_deposit=starting_deposit, roi=round(roi, 2),
             realized_pnl=realized_pnl,
+            expected_balance=expected_balance, balance_delta=balance_delta,
             reconcile_count=reconcile_count,
             reconcile_divergence=reconcile_divergence,
             reconcile_divergence_count=reconcile_divergence_count,

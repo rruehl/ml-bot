@@ -1,0 +1,26 @@
+2026-04-28 10:40:54.172  WARNING  AMEND FAILED  order_id=cb5a26c4-9464-4787-a243-f55c341f35d1  error=Client error '404 Not Found' for url 'https://api.elections.kalshi.com/trade-api/v2/portfolio/orders/cb5a26c4-9464-4787-a243-f55c341f35d1/amend'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+2026-04-28 10:40:55.252  WARNING  AMEND FAILED  order_id=cb5a26c4-9464-4787-a243-f55c341f35d1  error=Client error '404 Not Found' for url 'https://api.elections.kalshi.com/trade-api/v2/portfolio/orders/cb5a26c4-9464-4787-a243-f55c341f35d1/amend'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+2026-04-28 10:45:41.375  WARNING  AMEND FAILED  order_id=0f9b8185-43b5-4152-b56b-eb5308a6ffb3  error=Client error '404 Not Found' for url 'https://api.elections.kalshi.com/trade-api/v2/portfolio/orders/0f9b8185-43b5-4152-b56b-eb5308a6ffb3/amend'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+2026-04-28 10:45:43.603  WARNING  AMEND FAILED  order_id=0f9b8185-43b5-4152-b56b-eb5308a6ffb3  error=Client error '404 Not Found' for url 'https://api.elections.kalshi.com/trade-api/v2/portfolio/orders/0f9b8185-43b5-4152-b56b-eb5308a6ffb3/amend'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+2026-04-28 20:33:20.050  WARNING  AMEND FAILED  order_id=bbbad0ba-eb41-4090-a0f9-f7f226fdfba5  error=Client error '404 Not Found' for url 'https://api.elections.kalshi.com/trade-api/v2/portfolio/orders/bbbad0ba-eb41-4090-a0f9-f7f226fdfba5/amend'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+2026-04-29 15:01:32.866  WARNING  AMEND FAILED  order_id=b7d7f051-4356-4c48-95ad-53602e906315  error=Client error '404 Not Found' for url 'https://api.elections.kalshi.com/trade-api/v2/portfolio/orders/b7d7f051-4356-4c48-95ad-53602e906315/amend'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+2026-04-29 15:01:33.914  WARNING  AMEND FAILED  order_id=b7d7f051-4356-4c48-95ad-53602e906315  error=Client error '404 Not Found' for url 'https://api.elections.kalshi.com/trade-api/v2/portfolio/orders/b7d7f051-4356-4c48-95ad-53602e906315/amend'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+2026-04-29 15:31:12.411  WARNING  AMEND FAILED  order_id=cb47c28d-7ab4-4f7c-8dbc-7ee41f6d9192  error=Client error '404 Not Found' for url 'https://api.elections.kalshi.com/trade-api/v2/portfolio/orders/cb47c28d-7ab4-4f7c-8dbc-7ee41f6d9192/amend'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+2026-04-29 15:31:13.460  WARNING  AMEND FAILED  order_id=cb47c28d-7ab4-4f7c-8dbc-7ee41f6d9192  error=Client error '404 Not Found' for url 'https://api.elections.kalshi.com/trade-api/v2/portfolio/orders/cb47c28d-7ab4-4f7c-8dbc-7ee41f6d9192/amend'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+2026-04-29 15:31:14.536  WARNING  AMEND FAILED  order_id=cb47c28d-7ab4-4f7c-8dbc-7ee41f6d9192  error=Client error '404 Not Found' for url 'https://api.elections.kalshi.com/trade-api/v2/portfolio/orders/cb47c28d-7ab4-4f7c-8dbc-7ee41f6d9192/amend'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+2026-04-29 15:31:23.423  WARNING  AMEND FAILED  order_id=8a6a6e4d-3fd8-4ead-80b5-e7e13a6ff878  error=Client error '404 Not Found' for url 'https://api.elections.kalshi.com/trade-api/v2/portfolio/orders/8a6a6e4d-3fd8-4ead-80b5-e7e13a6ff878/amend'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+2026-04-29 15:31:24.481  WARNING  AMEND FAILED  order_id=8a6a6e4d-3fd8-4ead-80b5-e7e13a6ff878  error=Client error '404 Not Found' for url 'https://api.elections.kalshi.com/trade-api/v2/portfolio/orders/8a6a6e4d-3fd8-4ead-80b5-e7e13a6ff878/amend'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+2026-04-29 15:31:25.557  WARNING  AMEND FAILED  order_id=8a6a6e4d-3fd8-4ead-80b5-e7e13a6ff878  error=Client error '404 Not Found' for url 'https://api.elections.kalshi.com/trade-api/v2/portfolio/orders/8a6a6e4d-3fd8-4ead-80b5-e7e13a6ff878/amend'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404

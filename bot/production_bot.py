@@ -684,6 +684,7 @@ class StrategyController:
         self._stop_exit_in_progress = False
         self._stop_failed_ticker: str = ""
         self._stop_exit_submitted: bool = False
+        self._rescue_in_progress: bool = False
 
         self.last_heartbeat_ts = 0.0
         self._settle_lock      = asyncio.Lock()
@@ -810,7 +811,7 @@ class StrategyController:
             if fill_qty > 0:
                 is_taker = any(f.get("is_taker") for f in fills)
                 if is_taker:
-                    recomputed = round(fill_qty * 0.02, 6)
+                    recomputed = round(entry_cost * 0.02, 6)
                     if recomputed > entry_fees + 1e-9:
                         entry_fees = recomputed
             if fill_qty > 0 and self.active_position is not None:
@@ -882,8 +883,12 @@ class StrategyController:
             msg
         ]
 
-        with open(Config.LOG_FILE, "a", newline="") as f:
-            csv.writer(f).writerow(row)
+        try:
+            with open(Config.LOG_FILE, "a", newline="") as f:
+                csv.writer(f).writerow(row)
+        except Exception as _csv_exc:
+            _fb = logging.getLogger("kalshi_bot_v8")
+            _fb.error("CSV write failed event=%s error=%s row=%s", event, _csv_exc, row)
 
         try:
             if event == "HRTBT":
@@ -1199,6 +1204,7 @@ class StrategyController:
                 if ioc_filled or attempt >= Config.STOP_EXIT_MAX_RETRIES:
                     if not ioc_filled:
                         pos_snapshot = dict(pos)
+                        self._rescue_in_progress = True
                         asyncio.create_task(self._stop_rescue_loop(
                             kalshi, pos_snapshot, data["ticker"], data))
                         self.log("STOP_EXPIRY_RISK", attempt_ctx,
@@ -1217,11 +1223,16 @@ class StrategyController:
                              f"All {Config.STOP_EXIT_MAX_RETRIES+1} stop attempts failed: {e}")
 
         if stop_submitted:
-            self._stop_exit_submitted   = False
-            self.active_position        = None
-            self.session_fills          = 0
-            self._stop_exit_in_progress = False
-            self._stop_failed_ticker    = data.get("ticker", "")
+            self._stop_exit_submitted = False
+            self._stop_failed_ticker  = data.get("ticker", "")
+            if self._rescue_in_progress:
+                # Rescue loop owns active_position — keep _stop_exit_in_progress=True
+                # so the stop engine doesn't re-fire on every subsequent tick.
+                pass
+            else:
+                self.active_position        = None
+                self.session_fills          = 0
+                self._stop_exit_in_progress = False
         else:
             print(f"\033[91m[STOP] All attempts raised before API call — retaining position\033[0m")
             self.log("STOP_RETRY", stop_ctx, "Stop submission failed — retaining position")
@@ -1231,12 +1242,16 @@ class StrategyController:
         side  = position["side"]
         qty   = position["qty"]
         price = Config.STOP_FLOOR_CENTS
+        attempt = 0
         while True:
             await asyncio.sleep(Config.STOP_RESCUE_INTERVAL_SEC)
-            if self.active_position is None:
+            if not self._rescue_in_progress:
+                # Cleared by session roll — market settled, nothing to do.
                 return
             try:
-                coid = make_client_order_id(ticker, position.get("ml_birth_ts", 0), "rescue")
+                coid = make_client_order_id(ticker, position.get("ml_birth_ts", 0),
+                                            "rescue", attempt)
+                attempt += 1
                 order_kwargs = {
                     "ticker": ticker, "action": "sell", "side": side, "count": qty,
                     "time_in_force": "immediate_or_cancel", "client_order_id": coid,
@@ -1254,10 +1269,26 @@ class StrategyController:
                     fill_count = float(order_resp.get("order", {}).get("fill_count_fp", "0"))
                     filled     = fill_count > 0
                 if filled:
+                    gross_cost  = position.get("entry_cost",
+                                               position["entry_price"] * qty / 100.0)
+                    net_fees    = position.get("entry_fees", 0.0)
+                    exit_proceeds = qty * price / 100.0
+                    pnl = exit_proceeds - gross_cost - net_fees
+                    self.risk.record_pnl(pnl)
+                    self.log("STOP_CONFIRMED", {
+                        "ticker": ticker, "side": side,
+                        "entry_price": position["entry_price"], "qty": qty,
+                        "order_id": oid,
+                        "gross_proceeds": exit_proceeds, "gross_cost": gross_cost,
+                        "net_fees": net_fees, "pnl_this_trade": pnl,
+                    }, f"Rescue filled: {side.upper()} exit @ {price}¢ | pnl=${pnl:.4f}")
                     self.active_position        = None
                     self.session_fills          = 0
                     self._stop_failed_ticker    = ticker
-                    stop_log.info("RESCUE LOOP FILLED  order_id=%s", oid)
+                    self._rescue_in_progress    = False
+                    self._stop_exit_in_progress = False
+                    stop_log.info("RESCUE LOOP FILLED  order_id=%s  pnl=$%.4f", oid, pnl)
+                    asyncio.create_task(self.risk.sync_live_balance(kalshi, bot_ref=self))
                     return
             except Exception as e:
                 stop_log.error("RESCUE LOOP ERROR  %s", e)
@@ -1266,20 +1297,32 @@ class StrategyController:
                                   ticker: str, submitted_price: int):
         await asyncio.sleep(Config.STOP_CONFIRM_DELAY_SEC)
         try:
-            fills_resp  = await kalshi.get_fills(order_id=order_id)
-            fills       = fills_resp.get("fills", [])
-            side        = position["side"]
-            qty         = position["qty"]
-            sell_proceeds, sell_fees, fill_qty, avg_exit_price = _parse_fill_cost_and_fees(fills, "sell")
+            fills_resp = await kalshi.get_fills(order_id=order_id)
+            fills      = fills_resp.get("fills", [])
+            side       = position["side"]
+            qty        = position["qty"]
 
-            if side == "no" and fill_qty > 0:
-                corrected = sum(
-                    float(f.get("count_fp", 0)) *
-                    float(f.get("no_price_dollars") or (1.0 - float(f.get("yes_price_dollars") or 0)))
-                    for f in fills if f.get("action") == "sell"
+            # Use helper only for fill_qty and sell_fees.  Kalshi returns side="no" for
+            # YES sells (normalises sell-YES → buy-NO internally), so _parse_fill_cost_and_fees
+            # would invert yes_price_dollars and produce the wrong exit price.  We compute
+            # proceeds here using the position side instead of the fill-level side field.
+            _, sell_fees, fill_qty, _ = _parse_fill_cost_and_fees(fills, "sell")
+
+            sell_fills = [f for f in fills if f.get("action") == "sell"]
+            if side == "yes":
+                sell_proceeds = sum(
+                    float(f.get("count_fp", 0)) * float(f.get("yes_price_dollars") or 0)
+                    for f in sell_fills
                 )
-                if corrected > 0:
-                    sell_proceeds = corrected
+            else:
+                sell_proceeds = sum(
+                    float(f.get("count_fp", 0)) *
+                    float(f.get("no_price_dollars") or
+                          (1.0 - float(f.get("yes_price_dollars") or 0)))
+                    for f in sell_fills
+                )
+
+            avg_exit_price = round((sell_proceeds / fill_qty) * 100) if fill_qty > 0 else submitted_price
 
             gross_cost = position.get("entry_cost", position["entry_price"] * qty / 100.0)
             net_fees   = position.get("entry_fees", 0.0) + sell_fees
@@ -1294,10 +1337,69 @@ class StrategyController:
                 "net_fees": net_fees, "pnl_this_trade": pnl,
             }, f"Stop confirmed: {side.upper()} exit @ {avg_exit_price}¢ | pnl=${pnl:.4f}")
             await self.risk.sync_live_balance(kalshi, bot_ref=self)
+            asyncio.create_task(self._reconcile_stop_exit(
+                kalshi, order_id, position, ticker, pnl, sell_proceeds, gross_cost, net_fees
+            ))
         except Exception as e:
             stop_log.error("CONFIRM STOP EXIT EXCEPTION  order_id=%s  error=%s", order_id, e)
             self.log("ERROR", {"ticker": ticker},
                      f"_confirm_stop_exit failed for {order_id}: {e}")
+
+    async def _reconcile_stop_exit(
+        self, kalshi, order_id: str, position: dict, ticker: str,
+        estimated_pnl: float, est_proceeds: float, est_cost: float, est_fees: float,
+    ):
+        await asyncio.sleep(10.0)
+        side = position["side"]
+        qty  = position["qty"]
+        try:
+            fills_resp = await kalshi.get_fills(order_id=order_id)
+            fills      = fills_resp.get("fills", [])
+            _, actual_fees, fill_qty, _ = _parse_fill_cost_and_fees(fills, "sell")
+
+            sell_fills = [f for f in fills if f.get("action") == "sell"]
+            if side == "yes":
+                actual_proceeds = sum(
+                    float(f.get("count_fp", 0)) * float(f.get("yes_price_dollars") or 0)
+                    for f in sell_fills
+                )
+            else:
+                actual_proceeds = sum(
+                    float(f.get("count_fp", 0)) *
+                    float(f.get("no_price_dollars") or
+                          (1.0 - float(f.get("yes_price_dollars") or 0)))
+                    for f in sell_fills
+                )
+
+            if fill_qty == 0:
+                return
+
+            actual_pnl = actual_proceeds - est_cost - (position.get("entry_fees", 0.0) + actual_fees)
+            delta      = actual_pnl - estimated_pnl
+            diverged   = abs(delta) >= Config.RECONCILE_DIVERGENCE_THRESHOLD
+
+            reconcile_ctx = {
+                "ticker": ticker, "side": side,
+                "entry_price": position["entry_price"], "qty": qty,
+                "order_id": order_id,
+                "gross_proceeds":          actual_proceeds,
+                "gross_cost":              est_cost,
+                "net_fees":                position.get("entry_fees", 0.0) + actual_fees,
+                "pnl_this_trade":          actual_pnl,
+                "reconcile_estimated_pnl": estimated_pnl,
+                "reconcile_actual_pnl":    actual_pnl,
+                "reconcile_delta":         delta,
+                "settlement_source":       "stop_exit",
+            }
+            flag = "⚠️ DIVERGENCE" if diverged else "OK"
+            self.log("RECONCILE", reconcile_ctx,
+                     f"{flag} | estimated=${estimated_pnl:+.4f} actual=${actual_pnl:+.4f} "
+                     f"delta=${delta:+.4f}")
+            if diverged:
+                stop_log.warning("RECONCILE DIVERGENCE %s: estimated=%+.4f actual=%+.4f delta=%+.4f",
+                                 ticker, estimated_pnl, actual_pnl, delta)
+        except Exception as e:
+            stop_log.error("RECONCILE STOP EXIT ERROR  order_id=%s  error=%s", order_id, e)
 
     # ── Order recovery ────────────────────────────────────────────────────────
 
@@ -2488,6 +2590,7 @@ async def main():
                 bot._last_recovered_order_id = ""
                 bot._stop_exit_submitted    = False
                 bot._stop_exit_in_progress  = False
+                bot._rescue_in_progress     = False
                 bot._stop_failed_ticker     = ""
                 bot.acted_on_ml_birth_ts    = None
                 bot._save_birth_time(None)

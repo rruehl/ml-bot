@@ -27,7 +27,7 @@ seed: 42
 sequence_len: 60
 task: classification
 top_k_features: 128
-training_timestamp: '2026-04-27T16:19:18.571542+00:00'
+training_timestamp: '2026-04-29T13:03:41.966288+00:00'
 two_class_mode: true
 two_stage_trade_threshold: 0.5
 unified_data_path: /Users/ryanruehl/Desktop/ML Bot/data/processed/btc_1min_processed.parquet
