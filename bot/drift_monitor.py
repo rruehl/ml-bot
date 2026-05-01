@@ -37,6 +37,7 @@ RETRAIN_CMD = [
     "--optimize_tau_by", "ev",
     "--atr_min",         "15.0",
     "--atr_max",         "30.0",
+    "--deadband_bps",    "10.0",
 ]
 
 

@@ -1741,11 +1741,28 @@ class CentralizedTrainer:
         
         # Create basic temporal splits first
         train_df, val_df, test_df = splitter.split_data_symbol_wise(df)
-        
+
+        # Apply ATR channel gate to all splits so the model only trains on the
+        # volatility regime it will be deployed in.
+        atr_min = self.config.atr_min
+        atr_max = self.config.atr_max
+        if "ATR_14" in df.columns and (atr_min > 0 or atr_max < 100):
+            for split_name, split_df in [("train", train_df), ("val", val_df), ("test", test_df)]:
+                before = len(split_df)
+                mask = (split_df["ATR_14"] >= atr_min) & (split_df["ATR_14"] <= atr_max)
+                after = mask.sum()
+                logger.info(
+                    f"ATR gate [{atr_min}, {atr_max}] on {split_name}: {before} → {after} rows "
+                    f"({100*after/before:.1f}% retained)"
+                )
+            train_df = train_df[(train_df["ATR_14"] >= atr_min) & (train_df["ATR_14"] <= atr_max)]
+            val_df   = val_df[(val_df["ATR_14"] >= atr_min) & (val_df["ATR_14"] <= atr_max)]
+            test_df  = test_df[(test_df["ATR_14"] >= atr_min) & (test_df["ATR_14"] <= atr_max)]
+
         # Filter for trade-only samples in two-class mode
         if self.config.two_class_mode:
             train_df, val_df, test_df = splitter.filter_trade_only_samples(train_df, val_df, test_df)
-        
+
         return train_df, val_df, test_df
     
     def _prepare_features(self, train_df: pd.DataFrame, val_df: pd.DataFrame, 
@@ -3291,6 +3308,8 @@ def main():
         feature_selection_method=args.feature_selection_method,
         calibrate_probabilities=args.calibrate_probabilities,
         optimize_threshold_for_profit=args.optimize_threshold_for_profit,
+        optimize_tau_by=args.optimize_tau_by,
+        min_coverage=args.min_coverage,
         seed=args.seed,
         device=args.device,
         save_predictions=not args.no_save_predictions,

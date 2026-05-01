@@ -175,3 +175,22 @@ python3 ml/train.py --calibrate_probabilities --optimize_threshold_for_profit --
 python3 ml/train.py --optimize_threshold_for_profit --optimize_tau_by ev --atr_min 0 --atr_max 100
 
 python3 ml/train.py --atr_min 0 --atr_max 100 --confidence_tau 0.55 
+
+
+Run this to optimize deadband and ATR
+python3 deadband_atr_sweep.py \
+    --csv data/btc_1min.csv \
+    --horizon 15 \
+    --cost_bps 1.0 \
+    --heatmap \
+    --output sweep_2d.csv
+
+
+    Run this to train
+    python3 ml/train.py \
+    --optimize_threshold_for_profit \
+    --optimize_tau_by ev \
+    --atr_min 15.0 \
+    --atr_max 30.0 \
+    --deadband_bps 10.0 \
+    --epochs 30

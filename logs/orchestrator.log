@@ -821,3 +821,22 @@
 2026-04-30 13:41:27  INFO     [bot] Starting (restart #0)
 2026-04-30 13:41:27  INFO     [dashboard] Starting (restart #0)
 2026-04-30 13:41:27  INFO     [drift_monitor] Starting (restart #0)
+2026-04-30 15:01:55  INFO     Shutdown signal received
+2026-04-30 15:01:55  INFO     Stopping all processes ...
+2026-04-30 15:01:55  INFO     [collector] Sending SIGTERM ...
+2026-04-30 15:01:55  WARNING  [collector] Exited (code=0, uptime=4828s) — restarting in 10.0s
+2026-04-30 15:01:55  INFO     [collector] Supervisor stopped.
+2026-04-30 15:01:55  INFO     [collector] Stopped cleanly.
+2026-04-30 15:01:55  INFO     [bot] Sending SIGTERM ...
+2026-04-30 15:01:55  WARNING  [bot] Exited (code=-15, uptime=4828s) — restarting in 15.0s
+2026-04-30 15:01:55  INFO     [bot] Supervisor stopped.
+2026-04-30 15:01:55  INFO     [bot] Stopped cleanly.
+2026-04-30 15:01:55  INFO     [dashboard] Sending SIGTERM ...
+2026-04-30 15:01:55  WARNING  [dashboard] Exited (code=-15, uptime=4828s) — restarting in 10.0s
+2026-04-30 15:01:55  INFO     [dashboard] Supervisor stopped.
+2026-04-30 15:01:55  INFO     [dashboard] Stopped cleanly.
+2026-04-30 15:01:55  INFO     [drift_monitor] Sending SIGTERM ...
+2026-04-30 15:01:55  WARNING  [drift_monitor] Exited (code=-15, uptime=4828s) — restarting in 10.0s
+2026-04-30 15:01:55  INFO     [drift_monitor] Supervisor stopped.
+2026-04-30 15:01:55  INFO     [drift_monitor] Stopped cleanly.
+2026-04-30 15:01:55  INFO     Orchestrator stopped.
